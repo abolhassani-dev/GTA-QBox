@@ -1,0 +1,11 @@
+# اطلاعات محرمانه (رمز دیتابیس، کلید لایسنس، کلید Steam) هرگز داخل گیت نمی‌رود
+server-data/secrets.cfg
+
+# فایل‌های موقت و لاگ‌های سرور
+server-data/cache/
+server-data/txData/
+*.log
+crashes/
+
+# فایل‌های خود VMP Server (جداگانه دانلود می‌شوند)
+artifacts/
