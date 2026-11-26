@@ -9,3 +9,12 @@ crashes/
 
 # فایل‌های خود VMP Server (جداگانه دانلود می‌شوند)
 artifacts/
+
+# ریسورس‌هایی که install.ps1 دانلود می‌کند (فقط [mars] داخل گیت است)
+server-data/resources/[ox]/
+server-data/resources/[qbx]/
+server-data/resources/[standalone]/
+server-data/resources/[voice]/
+server-data/resources/[cfx-default]/
+logs/
+tmp-install/
