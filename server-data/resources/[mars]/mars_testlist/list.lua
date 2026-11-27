@@ -6,6 +6,7 @@ TestList = {
         { id = 'admin',    title = 'Admin menu',                   how = 'Type /admin. The Qbox admin menu opens.' },
         { id = 'noclip',   title = 'Noclip',                       how = 'Type /noclip, fly around, /noclip again to stop.' },
         { id = 'revive',   title = 'Revive and heal',              how = 'Type /kill then /revive. Then /aheal.' },
+        { id = 'give',     title = 'Give items (/give)',           how = '/give gold bar 5  (to you)  •  /give 2 goldbar 1  (to ID 2)  •  /give alone opens an A-Z searchable menu.' },
         { id = 'respawn',  title = 'Hospital respawn',             how = 'Die with no doctor online, hold E. You wake up at the hospital and keep your items.' },
         { id = 'save',     title = 'Character is saved',           how = 'Note your money and position, reconnect. Everything is still there.' },
         { id = 'radial',   title = 'Radial menu',                  how = 'Hold Z. The radial menu opens.' },
