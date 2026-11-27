@@ -38,10 +38,10 @@ Config.Strains = {
 -- ── Quality tiers (score = average care during the whole growth) ──
 -- Ordered from best to worst; the first tier whose `min` is reached is used.
 Config.Qualities = {
-    { key = 'exotic', label = 'اگزوتیک', min = 90, priceMult = 2.2 },
-    { key = 'high',   label = 'بالا',    min = 70, priceMult = 1.5 },
-    { key = 'medium', label = 'متوسط',   min = 40, priceMult = 1.0 },
-    { key = 'low',    label = 'ضعیف',    min = 0,  priceMult = 0.6 },
+    { key = 'exotic', label = 'Exotic', min = 90, priceMult = 2.2 },
+    { key = 'high',   label = 'High',    min = 70, priceMult = 1.5 },
+    { key = 'medium', label = 'Medium',   min = 40, priceMult = 1.0 },
+    { key = 'low',    label = 'Low',    min = 0,  priceMult = 0.6 },
 }
 
 -- ── Processing (drying rack + packing table) ──
@@ -64,7 +64,7 @@ Config.Lab = {
 Config.Shop = {
     ped    = `a_m_y_hippy_01`,
     coords = vec4(-1171.42, -1571.00, 4.66, 124.0), -- Vespucci beach, "Smoke on the Water"
-    blip   = { sprite = 140, color = 25, label = 'فروشگاه باغبانی' },
+    blip   = { sprite = 140, color = 25, label = 'Garden Supplies' },
     extra  = {
         { name = 'water',          price = 10 },
         { name = 'weed_nutrition', price = 60 },
@@ -113,7 +113,7 @@ end
 -- Metadata is built the same way everywhere so ox_inventory stacks and
 -- matches items exactly (strain + quality).
 function Config.SeedMeta(strain)
-    return { strain = strain, description = ('نوع: %s'):format(Config.Strains[strain].label) }
+    return { strain = strain, description = ('Strain: %s'):format(Config.Strains[strain].label) }
 end
 
 function Config.ProductMeta(strain, quality)
@@ -121,6 +121,6 @@ function Config.ProductMeta(strain, quality)
     return {
         strain = strain,
         quality = quality,
-        description = ('نوع: %s | کیفیت: %s'):format(Config.Strains[strain].label, q and q.label or quality),
+        description = ('Strain: %s | Quality: %s'):format(Config.Strains[strain].label, q and q.label or quality),
     }
 end

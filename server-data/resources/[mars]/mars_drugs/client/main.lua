@@ -63,11 +63,11 @@ local function showStatus(id)
         id = 'mars_drugs_plant',
         title = ('🌿 %s'):format(strainLabel(p.strain)),
         options = {
-            { title = p.dead and 'وضعیت: مرده ☠️' or ('رشد: %d%%'):format(math.floor(p.growth)), progress = p.growth, colorScheme = 'green', readOnly = true },
-            { title = ('آب: %d%%'):format(math.floor(p.water)), progress = p.water, colorScheme = 'blue', readOnly = true },
-            { title = ('کود: %d%%'):format(math.floor(p.food)), progress = p.food, colorScheme = 'yellow', readOnly = true },
-            { title = ('سلامت: %d%%'):format(math.floor(p.health)), progress = p.health, colorScheme = p.health > 50 and 'green' or 'red', readOnly = true },
-            { title = ('کیفیت فعلی: %s'):format(q.label), description = 'هر چه بهتر مراقبت کنید، کیفیت بالاتر می‌رود.', readOnly = true },
+            { title = p.dead and 'Status: dead ☠️' or ('Growth: %d%%'):format(math.floor(p.growth)), progress = p.growth, colorScheme = 'green', readOnly = true },
+            { title = ('Water: %d%%'):format(math.floor(p.water)), progress = p.water, colorScheme = 'blue', readOnly = true },
+            { title = ('Fertilizer: %d%%'):format(math.floor(p.food)), progress = p.food, colorScheme = 'yellow', readOnly = true },
+            { title = ('Health: %d%%'):format(math.floor(p.health)), progress = p.health, colorScheme = p.health > 50 and 'green' or 'red', readOnly = true },
+            { title = ('Current quality: %s'):format(q.label), description = 'Better care means higher quality.', readOnly = true },
         },
     })
     lib.showContext('mars_drugs_plant')
@@ -78,43 +78,43 @@ end
 -- ─────────────────────────────────────────────────────────────
 
 local function doWater(id)
-    if exports.ox_inventory:Search('count', 'water') < 1 then return notify(false, 'آب ندارید.') end
-    if not progress('آب دادن...', 4000, { dict = 'weapon@w_sp_jerrycan', clip = 'fire' }) then return end
+    if exports.ox_inventory:Search('count', 'water') < 1 then return notify(false, 'You have no water.') end
+    if not progress('Watering...', 4000, { dict = 'weapon@w_sp_jerrycan', clip = 'fire' }) then return end
     notify(lib.callback.await('mars_drugs:server:water', false, id))
 end
 
 local function doFeed(id)
-    if exports.ox_inventory:Search('count', 'weed_nutrition') < 1 then return notify(false, 'کود ندارید.') end
-    if not progress('کود دادن...', 4000, { dict = 'amb@world_human_gardener_plant@male@base', clip = 'base' }) then return end
+    if exports.ox_inventory:Search('count', 'weed_nutrition') < 1 then return notify(false, 'You have no fertilizer.') end
+    if not progress('Fertilizing...', 4000, { dict = 'amb@world_human_gardener_plant@male@base', clip = 'base' }) then return end
     notify(lib.callback.await('mars_drugs:server:feed', false, id))
 end
 
 local function doHarvest(id)
-    if not progress('برداشت...', 8000, { dict = 'amb@world_human_gardener_plant@male@base', clip = 'base' }) then return end
+    if not progress('Harvesting...', 8000, { dict = 'amb@world_human_gardener_plant@male@base', clip = 'base' }) then return end
     notify(lib.callback.await('mars_drugs:server:harvest', false, id))
 end
 
 local function doDestroy(id)
-    local confirm = lib.alertDialog({ header = 'از بین بردن گیاه', content = 'مطمئن هستید؟', centered = true, cancel = true })
+    local confirm = lib.alertDialog({ header = 'Destroy plant', content = 'Are you sure?', centered = true, cancel = true })
     if confirm ~= 'confirm' then return end
-    if not progress('از بین بردن...', 5000, { dict = 'amb@world_human_gardener_plant@male@base', clip = 'base' }) then return end
+    if not progress('Destroying...', 5000, { dict = 'amb@world_human_gardener_plant@male@base', clip = 'base' }) then return end
     notify(lib.callback.await('mars_drugs:server:destroy', false, id))
 end
 
 local function plantTargetOptions(id)
     return {
-        { name = 'mars_plant_status', icon = 'fa-solid fa-seedling', label = 'وضعیت گیاه',
+        { name = 'mars_plant_status', icon = 'fa-solid fa-seedling', label = 'Plant status',
           onSelect = function() showStatus(id) end },
-        { name = 'mars_plant_water', icon = 'fa-solid fa-droplet', label = 'آب دادن',
+        { name = 'mars_plant_water', icon = 'fa-solid fa-droplet', label = 'Water',
           canInteract = function() local p = plants[id] return p and not p.dead and p.growth < 100 end,
           onSelect = function() doWater(id) end },
-        { name = 'mars_plant_feed', icon = 'fa-solid fa-flask', label = 'کود دادن',
+        { name = 'mars_plant_feed', icon = 'fa-solid fa-flask', label = 'Fertilize',
           canInteract = function() local p = plants[id] return p and not p.dead and p.growth < 100 end,
           onSelect = function() doFeed(id) end },
-        { name = 'mars_plant_harvest', icon = 'fa-solid fa-hand-scissors', label = 'برداشت',
+        { name = 'mars_plant_harvest', icon = 'fa-solid fa-hand-scissors', label = 'Harvest',
           canInteract = function() local p = plants[id] return p and not p.dead and p.growth >= 100 end,
           onSelect = function() doHarvest(id) end },
-        { name = 'mars_plant_destroy', icon = 'fa-solid fa-fire', label = 'از بین بردن',
+        { name = 'mars_plant_destroy', icon = 'fa-solid fa-fire', label = 'Destroy',
           onSelect = function() doDestroy(id) end },
     }
 end
@@ -187,13 +187,13 @@ end
 
 RegisterNetEvent('mars_drugs:client:startPlanting', function(strain, slot)
     local ped = cache.ped
-    if IsPedInAnyVehicle(ped, false) then return notify(false, 'داخل ماشین نمی‌شود کاشت.') end
-    if GetInteriorFromEntity(ped) ~= 0 then return notify(false, 'فقط در فضای باز می‌شود کاشت.') end
+    if IsPedInAnyVehicle(ped, false) then return notify(false, 'You cannot plant inside a vehicle.') end
+    if GetInteriorFromEntity(ped) ~= 0 then return notify(false, 'You can only plant outdoors.') end
 
     local spot = GetOffsetFromEntityInWorldCoords(ped, 0.0, 0.8, 0.0)
     local z = groundZ(spot.x, spot.y, spot.z)
 
-    if not progress(('کاشتن %s...'):format(strainLabel(strain)), Config.PlantAnimMs,
+    if not progress(('Planting %s...'):format(strainLabel(strain)), Config.PlantAnimMs,
         { dict = 'amb@world_human_gardener_plant@male@base', clip = 'base' }) then return end
 
     notify(lib.callback.await('mars_drugs:server:plant', false, strain, slot, vec3(spot.x, spot.y, z)))
@@ -224,11 +224,11 @@ local function chooseAndRun(itemName, title, emptyMsg, perUnit, maxFn, run)
         local max = maxFn(g)
         options[#options + 1] = {
             title = ('%s – %s'):format(strainLabel(g.strain), q and q.label or g.quality),
-            description = ('موجودی: %d'):format(g.count),
+            description = ('You have: %d'):format(g.count),
             disabled = max < 1,
             onSelect = function()
                 local input = lib.inputDialog(title, {
-                    { type = 'number', label = 'تعداد', default = max, min = 1, max = max, required = true },
+                    { type = 'number', label = 'Amount', default = max, min = 1, max = max, required = true },
                 })
                 if not input then return end
                 local count = math.floor(input[1])
@@ -243,20 +243,20 @@ local function chooseAndRun(itemName, title, emptyMsg, perUnit, maxFn, run)
 end
 
 local function openDrying()
-    chooseAndRun('mars_weed_wet', 'خشک کردن گل', 'گل خیس ندارید.', Config.Processing.dryMsPerItem,
+    chooseAndRun('mars_weed_wet', 'Dry buds', 'You have no wet buds.', Config.Processing.dryMsPerItem,
         function(g) return g.count end,
         function(g, count, duration)
-            if not progress('آویزان کردن گل‌ها روی خشک‌کن...', duration, { dict = 'anim@amb@business@weed@weed_inspecting_lo_med_hi@', clip = 'weed_crouch_checkingleaves_idle_01_inspector' }) then return end
+            if not progress('Hanging buds on the rack...', duration, { dict = 'anim@amb@business@weed@weed_inspecting_lo_med_hi@', clip = 'weed_crouch_checkingleaves_idle_01_inspector' }) then return end
             notify(lib.callback.await('mars_drugs:server:dry', false, g.strain, g.quality, count))
         end)
 end
 
 local function openPacking()
     local bagsHave = exports.ox_inventory:Search('count', 'empty_weed_bag')
-    chooseAndRun('mars_weed_dry', 'بسته‌بندی', 'گل خشک ندارید.', Config.Processing.packMsPerItem,
+    chooseAndRun('mars_weed_dry', 'Pack bags', 'You have no dry buds.', Config.Processing.packMsPerItem,
         function(g) return math.min(math.floor(g.count / Config.Processing.budsPerBag), bagsHave) end,
         function(g, count, duration)
-            if not progress('بسته‌بندی...', duration, { dict = 'anim@amb@business@weed@weed_sorting_seated@', clip = 'sorter_right_sort_v3_sorter02' }) then return end
+            if not progress('Packing...', duration, { dict = 'anim@amb@business@weed@weed_sorting_seated@', clip = 'sorter_right_sort_v3_sorter02' }) then return end
             notify(lib.callback.await('mars_drugs:server:pack', false, g.strain, g.quality, count))
         end)
 end
@@ -278,10 +278,10 @@ end
 
 local function spawnLab()
     spawnLabProp(Config.Props.rack, Config.Props.rackFallback, Config.Lab.rack, {
-        { name = 'mars_lab_dry', icon = 'fa-solid fa-wind', label = 'خشک کردن گل', onSelect = openDrying },
+        { name = 'mars_lab_dry', icon = 'fa-solid fa-wind', label = 'Dry buds', onSelect = openDrying },
     })
     spawnLabProp(Config.Props.table, Config.Props.tableFallback, Config.Lab.table, {
-        { name = 'mars_lab_pack', icon = 'fa-solid fa-box', label = 'بسته‌بندی', onSelect = openPacking },
+        { name = 'mars_lab_pack', icon = 'fa-solid fa-box', label = 'Pack bags', onSelect = openPacking },
     })
 end
 
@@ -308,7 +308,7 @@ local function spawnShopPed()
     TaskStartScenarioInPlace(shopPed, 'WORLD_HUMAN_SMOKING_POT', 0, true)
     SetModelAsNoLongerNeeded(Config.Shop.ped)
     exports.ox_target:addLocalEntity(shopPed, {
-        { name = 'mars_shop', icon = 'fa-solid fa-store', label = 'خرید بذر و وسایل',
+        { name = 'mars_shop', icon = 'fa-solid fa-store', label = 'Buy seeds & supplies',
           onSelect = function() exports.ox_inventory:openInventory('shop', { type = 'mars_drugs_shop' }) end },
     })
 end
@@ -359,7 +359,7 @@ local function canSellTo(entity)
 end
 
 exports.ox_target:addGlobalPed({
-    { name = 'mars_sell', icon = 'fa-solid fa-cannabis', label = 'فروش جنس', distance = 2.0,
+    { name = 'mars_sell', icon = 'fa-solid fa-cannabis', label = 'Sell product', distance = 2.0,
       canInteract = function(entity) return canSellTo(entity) end,
       onSelect = function(data)
           local ped = data.entity
@@ -369,7 +369,7 @@ exports.ox_target:addGlobalPed({
           TaskTurnPedToFaceEntity(cache.ped, ped, 1500)
           Wait(1000)
           FreezeEntityPosition(ped, true)
-          local done = progress('معامله...', Config.Selling.animMs, { dict = 'mp_common', clip = 'givetake1_a' })
+          local done = progress('Dealing...', Config.Selling.animMs, { dict = 'mp_common', clip = 'givetake1_a' })
           FreezeEntityPosition(ped, false)
           if not done then return end
           local ok, msg = lib.callback.await('mars_drugs:server:sell', false)
@@ -383,7 +383,7 @@ exports.ox_target:addGlobalPed({
 -- ─────────────────────────────────────────────────────────────
 
 RegisterNetEvent('mars_drugs:client:policeAlert', function(coords)
-    lib.notify({ title = 'گزارش ۱۱۰', description = 'یک شهروند فروش مواد را گزارش داد.', type = 'warning', duration = 8000 })
+    lib.notify({ title = '911 Report', description = 'A citizen reported a drug deal.', type = 'warning', duration = 8000 })
     local blip = AddBlipForRadius(coords.x + math.random(-40, 40), coords.y + math.random(-40, 40), coords.z, 80.0)
     SetBlipColour(blip, 1); SetBlipAlpha(blip, 120)
     SetTimeout(60000, function() RemoveBlip(blip) end)

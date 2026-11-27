@@ -645,30 +645,30 @@ return {
     },
     -- ── Mars drugs (mars_drugs) ── strain/quality live in metadata
     ['mars_weed_seed'] = {
-        label = 'بذر ماری‌جوانا',
+        label = 'Cannabis Seed',
         weight = 5,
-        description = 'برای کاشت استفاده کنید (فقط در فضای باز).',
+        description = 'Use it to plant (outdoors only).',
         client = { image = 'weed_og-kush_seed.png' },
     },
 
     ['mars_weed_wet'] = {
-        label = 'گل خیس',
+        label = 'Wet Bud',
         weight = 40,
-        description = 'باید روی خشک‌کن خشک شود.',
+        description = 'Dry it on a drying rack.',
         client = { image = 'weed_white-widow.png' },
     },
 
     ['mars_weed_dry'] = {
-        label = 'گل خشک',
+        label = 'Dry Bud',
         weight = 25,
-        description = 'با کیسه‌ی خالی روی میز بسته‌بندی کنید.',
+        description = 'Pack it at the table with empty bags.',
         client = { image = 'weed_skunk.png' },
     },
 
     ['mars_weed_bag'] = {
-        label = 'بسته‌ی گل',
+        label = 'Bag of Weed',
         weight = 30,
-        description = 'آماده‌ی فروش.',
+        description = 'Ready to sell.',
         client = { image = 'weed_og-kush.png' },
     },
 }
