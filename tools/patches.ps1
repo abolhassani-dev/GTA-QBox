@@ -15,6 +15,9 @@ function Edit-File($path, [scriptblock]$transform) {
     $after = & $transform $before
     if ($after -ne $before) {
         [IO.File]::WriteAllText($path, $after, $Utf8NoBom)
+        # remember which resource changed (hotupdate.ps1 restarts it live)
+        $rel = @($path.Substring($Res.Length).TrimStart('\').Split('\') | Where-Object { $_ -notmatch '^\[.*\]$' })
+        if ($rel) { $global:MarsPatchedResources += @($rel[0]) }
         Write-Host "   patched $([IO.Path]::GetFileName([IO.Path]::GetDirectoryName($path)))\$([IO.Path]::GetFileName($path))"
     }
 }

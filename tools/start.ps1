@@ -22,6 +22,15 @@ if (-not (Test-Path (Join-Path $Data 'secrets.cfg'))) {
     exit 1
 }
 
+# --- remote console password (lets hot-update.bat restart scripts without a server restart) ---
+$secretsFile = Join-Path $Data 'secrets.cfg'
+if (-not (Select-String -Path $secretsFile -Pattern '^\s*rcon_password' -Quiet)) {
+    $chars = [char[]]'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+    $pw = -join (1..24 | ForEach-Object { $chars | Get-Random })
+    Add-Content -Path $secretsFile -Value "`r`nrcon_password `"$pw`"" -Encoding ASCII
+    Write-Host 'Added a remote console password to secrets.cfg (for hot-update.bat).'
+}
+
 # --- apply the developer's patches to downloaded resources (idempotent) ---
 & (Join-Path $PSScriptRoot 'patches.ps1')
 

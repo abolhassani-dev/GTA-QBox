@@ -13,6 +13,6 @@
 ## پروژه
 - سرور GTA V رول‌پلی روی پلتفرم VMP (vmp.ir، فورک FiveM) با فریم‌ورک QBox.
 - VPSهای پارس‌پک (VPS ترکیه و سرور ابری) CPU مجازی kvm64/QEMU دارند و سرور VMP رویشان اجرا نمی‌شود (نیاز به POPCNT/SSSE3). سرور اصلی باید CPU نوع host داشته باشد؛ قبل از خرید با Task Manager چک شود.
-- سرور تست: کامپیوتر شخصی (لوکال) در C:\MarsCommunity\GTA-QBox. اگر Claude Code روی همان سیستم اجرا شود، مستقیم کار می‌کند؛ وگرنه از طریق GitHub: Claude push می‌کند، صاحب پروژه `update.bat` را اجرا می‌کند.
+- سرور تست: کامپیوتر شخصی (لوکال) در C:\MarsCommunity\GTA-QBox. اگر Claude Code روی همان سیستم اجرا شود، مستقیم کار می‌کند؛ وگرنه از طریق GitHub: Claude push می‌کند، صاحب پروژه `update.bat` (با ریستارت) یا `hot-update.bat` (بدون ریستارت، اسکریپت‌های تغییرکرده را زنده ریستارت می‌کند) را اجرا می‌کند.
 - مراحل نصبِ تست‌شده: Git ← MariaDB 11.8 ← 7-Zip ← آرتیفکت VMP (artifact.vmp.ir، نسخه 100301) در پوشه‌ی artifacts ← tools\install.bat ← start.bat
 - رمزها فقط در `server-data/secrets.cfg` (در gitignore). هیچ رمزی در گیت یا چت نیاید.
