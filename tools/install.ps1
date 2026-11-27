@@ -58,6 +58,40 @@ $Resources = @(
     @{ group='[qbx]'; name='qbx_customs';        repo='Qbox-project/qbx_customs';        kind='release'; version='latest' }
     @{ group='[qbx]'; name='qbx_radio';          repo='Qbox-project/qbx_radio';          kind='release'; version='latest' }
     @{ group='[qbx]'; name='qbx_drugs';          repo='Qbox-project/qbx_drugs';          kind='source';  ref='main' }
+    @{ group='[qbx]'; name='qbx_medical';        repo='Qbox-project/qbx_medical';        kind='source';  ref='main' }
+    @{ group='[qbx]'; name='qbx_prison';         repo='Qbox-project/qbx_prison';         kind='source';  ref='main' }
+    @{ group='[qbx]'; name='qbx_vehiclekeys';    repo='Qbox-project/qbx_vehiclekeys';    kind='source';  ref='main' }
+    @{ group='[qbx]'; name='qbx_vehicleshop';    repo='Qbox-project/qbx_vehicleshop';    kind='source';  ref='main' }
+    @{ group='[qbx]'; name='qbx_cityhall';       repo='Qbox-project/qbx_cityhall';       kind='source';  ref='main' }
+    @{ group='[qbx]'; name='qbx_radialmenu';     repo='Qbox-project/qbx_radialmenu';     kind='source';  ref='main' }
+    @{ group='[qbx]'; name='qbx_scoreboard';     repo='Qbox-project/qbx_scoreboard';     kind='source';  ref='main' }
+    @{ group='[qbx]'; name='qbx_seatbelt';       repo='Qbox-project/qbx_seatbelt';       kind='source';  ref='main' }
+    @{ group='[qbx]'; name='qbx_idcard';         repo='Qbox-project/qbx_idcard';         kind='source';  ref='main' }
+    @{ group='[qbx]'; name='qbx_carwash';        repo='Qbox-project/qbx_carwash';        kind='source';  ref='main' }
+    @{ group='[qbx]'; name='qbx_properties';     repo='Qbox-project/qbx_properties';     kind='source';  ref='main' }
+    # JOBS
+    @{ group='[qbx-jobs]'; name='qbx_policejob';    repo='Qbox-project/qbx_policejob';    kind='source'; ref='main' }
+    @{ group='[qbx-jobs]'; name='qbx_ambulancejob'; repo='Qbox-project/qbx_ambulancejob'; kind='source'; ref='main' }
+    @{ group='[qbx-jobs]'; name='qbx_mechanicjob';  repo='Qbox-project/qbx_mechanicjob';  kind='source'; ref='main' }
+    @{ group='[qbx-jobs]'; name='qbx_taxijob';      repo='Qbox-project/qbx_taxijob';      kind='source'; ref='main' }
+    @{ group='[qbx-jobs]'; name='qbx_towjob';       repo='Qbox-project/qbx_towjob';       kind='source'; ref='main' }
+    @{ group='[qbx-jobs]'; name='qbx_garbagejob';   repo='Qbox-project/qbx_garbagejob';   kind='source'; ref='main' }
+    @{ group='[qbx-jobs]'; name='qbx_busjob';       repo='Qbox-project/qbx_busjob';       kind='source'; ref='main' }
+    @{ group='[qbx-jobs]'; name='qbx_truckerjob';   repo='Qbox-project/qbx_truckerjob';   kind='source'; ref='main' }
+    @{ group='[qbx-jobs]'; name='qbx_newsjob';      repo='Qbox-project/qbx_newsjob';      kind='source'; ref='main' }
+    @{ group='[qbx-jobs]'; name='qbx_recyclejob';   repo='Qbox-project/qbx_recyclejob';   kind='source'; ref='main' }
+    # CRIME
+    @{ group='[qbx-crime]'; name='qbx_bankrobbery';  repo='Qbox-project/qbx_bankrobbery';  kind='source'; ref='main' }
+    @{ group='[qbx-crime]'; name='qbx_jewelery';     repo='Qbox-project/qbx_jewelery';     kind='source'; ref='main' }
+    @{ group='[qbx-crime]'; name='qbx_houserobbery'; repo='Qbox-project/qbx_houserobbery'; kind='source'; ref='main' }
+    @{ group='[qbx-crime]'; name='qbx_pawnshop';     repo='Qbox-project/qbx_pawnshop';     kind='source'; ref='main' }
+    @{ group='[qbx-crime]'; name='qbx_scrapyard';    repo='Qbox-project/qbx_scrapyard';    kind='source'; ref='main' }
+    @{ group='[qbx-crime]'; name='qbx_streetraces';  repo='Qbox-project/qbx_streetraces';  kind='source'; ref='main' }
+    # PHONE (npwd)
+    @{ group='[phone]'; name='npwd';          repo='project-error/npwd';          kind='release'; version='3.14.3' }
+    @{ group='[phone]'; name='qbx_npwd';      repo='Qbox-project/qbx_npwd';       kind='source';  ref='main' }
+    @{ group='[phone]'; name='npwd_qbx_mail'; repo='Qbox-project/npwd_qbx_mail'; kind='release'; version='latest' }
+    @{ group='[phone]'; name='screencapture'; repo='itschip/screencapture';       kind='release'; version='latest' }
     # STANDALONE
     @{ group='[standalone]'; name='bob74_ipl';           repo='Bob74/bob74_ipl';                      kind='source';  ref='master' }
     @{ group='[standalone]'; name='illenium-appearance'; repo='iLLeniumStudios/illenium-appearance';   kind='release'; version='latest' }
@@ -66,6 +100,7 @@ $Resources = @(
     @{ group='[standalone]'; name='loadscreen';          repo='D4isDAVID/loadscreen';                 kind='release'; version='latest' }
     @{ group='[standalone]'; name='scully_emotemenu';    repo='Scullyy/scully_emotemenu';             kind='source';  ref='main' }
     @{ group='[standalone]'; name='vehiclehandler';      repo='QuantumMalice/vehiclehandler';         kind='release'; version='latest' }
+    @{ group='[standalone]'; name='MugShotBase64';       repo='BaziForYou/MugShotBase64';             kind='source';  ref='main' }
     @{ group='[standalone]'; name='mana_audio';          repo='Manason/mana_audio';                   kind='release'; version='latest' }
     # VOICE
     @{ group='[voice]'; name='pma-voice'; repo='AvarianKnight/pma-voice'; kind='source'; ref='main' }
@@ -142,6 +177,12 @@ foreach ($r in $Resources) {
 }
 }
 
+# npwd uses the Qbox phone config shipped with qbx_npwd
+$npwdCfg = Join-Path $Res '[phone]\qbx_npwd\config.json'
+if ([IO.File]::Exists($npwdCfg) -and [IO.Directory]::Exists((Join-Path $Res '[phone]\npwd'))) {
+    [IO.File]::Copy($npwdCfg, (Join-Path $Res '[phone]\npwd\config.json'), $true)
+}
+
 # ox_inventory item list from the Qbox recipe
 $invData = Join-Path $Res '[ox]\ox_inventory\data'
 if ([IO.Directory]::Exists($invData)) { [IO.File]::Copy((Join-Path $PSScriptRoot 'ox_items.lua'), (Join-Path $invData 'items.lua'), $true) }
@@ -198,7 +239,12 @@ FLUSH PRIVILEGES;
             (Join-Path $PSScriptRoot 'qbox.sql'),
             (Join-Path $Res '[qbx]\qbx_core\qbx_core.sql'),
             (Join-Path $Res '[qbx]\qbx_vehicles\vehicles.sql'),
-            (Join-Path $Res '[qbx]\qbx_drugs\qbx_drugs.sql')
+            (Join-Path $Res '[qbx]\qbx_drugs\qbx_drugs.sql'),
+            (Join-Path $Res '[qbx]\qbx_vehicleshop\vehshop.sql'),
+            (Join-Path $Res '[qbx]\qbx_properties\property.sql'),
+            (Join-Path $Res '[qbx]\qbx_properties\property_garages.sql'),
+            (Join-Path $Res '[qbx]\qbx_properties\decorations.sql'),
+            (Join-Path $Res '[phone]\npwd\import.sql')
         )
         foreach ($f in $sqlFiles) {
             if ([IO.File]::Exists($f)) {

@@ -26,13 +26,7 @@ Edit-File (Join-Path $Res '[qbx]\qbx_core\fxmanifest.lua') {
     return ($t -replace "server_scripts\s*\{", "server_scripts {`r`n    '@mars_identity/shim.lua',")
 }
 
-# 2. qbx_core: we have no phone (npwd) or housing tables yet -> stop the startup warnings
-Edit-File (Join-Path $Res '[qbx]\qbx_core\config\server.lua') {
-    param($t)
-    $lines = $t -split "`r?`n"
-    $kept = $lines | Where-Object { $_ -notmatch "^\s*\{\s*'(npwd_[a-z_]+|properties)'\s*," }
-    return ($kept -join "`r`n")
-}
+# 2. (removed) phone/housing tables now exist: npwd and qbx_properties are installed
 
 # 3. ox_lib: version is pinned on purpose (3.41+ needs a 'require' resource VMP lacks)
 Edit-File (Join-Path $Res '[ox]\ox_lib\resource\version\server.lua') {

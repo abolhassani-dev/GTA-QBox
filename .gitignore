@@ -15,6 +15,9 @@ server-data/resources/[ox]/
 server-data/resources/[qbx]/
 server-data/resources/[standalone]/
 server-data/resources/[voice]/
+server-data/resources/[qbx-jobs]/
+server-data/resources/[qbx-crime]/
+server-data/resources/[phone]/
 server-data/resources/[cfx-default]/
 logs/
 tmp-install/
