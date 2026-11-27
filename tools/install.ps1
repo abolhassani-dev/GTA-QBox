@@ -243,7 +243,8 @@ FLUSH PRIVILEGES;
             (Join-Path $Res '[qbx]\qbx_properties\property.sql'),
             (Join-Path $Res '[qbx]\qbx_properties\property_garages.sql'),
             (Join-Path $Res '[qbx]\qbx_properties\decorations.sql'),
-            (Join-Path $Res '[phone]\npwd\import.sql')
+            (Join-Path $Res '[phone]\npwd\import.sql'),
+            (Join-Path $Res '[police]\ps-mdt\sql\qbx.sql')
         )
         foreach ($f in $sqlFiles) {
             if ([IO.File]::Exists($f)) {

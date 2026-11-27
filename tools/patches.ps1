@@ -70,3 +70,18 @@ if ([IO.Directory]::Exists($oldPawn)) {
     [IO.Directory]::Delete($oldPawn, $true)
     Write-Host '   removed qbx_pawnshop (replaced by mars_pawnshop)'
 }
+
+# 8. ps-mdt / ps_lib (downloaded by hand into resources\[police]) – adapt to Mars
+Edit-File (Join-Path $Res '[police]\ps-mdt\config.lua') {
+    param($t)
+    $t = $t -replace "Resource\s*=\s*'lb-phone'", "Resource     = ''"
+    $t = $t -replace "(?m)^(\s*)'lspd',", "`$1'police',"
+    $t = $t -replace "(?m)^(\s*)'sahp'(,?)", "`$1'sasp'`$2"
+    return $t
+}
+Edit-File (Join-Path $Res '[police]\ps_lib\Config.lua') {
+    param($t)
+    $t = $t -replace 'Config\.Banking\s*=\s*"qb"', 'Config.Banking = "Renewed"'
+    $t = $t -replace 'Config\.EmoteMenu\s*=\s*"rpemotes"', 'Config.EmoteMenu = "scully"'
+    return $t
+}
