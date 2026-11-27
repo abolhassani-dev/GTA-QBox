@@ -55,3 +55,11 @@ Edit-File (Join-Path $Res '[qbx]\qbx_medical\config\client.lua') {
     param($t)
     return ($t -replace 'deathTime\s*=\s*\d+', 'deathTime = 180')
 }
+
+# 6. City Hall: offer the Mars work jobs (mars_jobs) in the employment menu
+Edit-File (Join-Path $Res '[qbx]\qbx_cityhall\config\shared.lua') {
+    param($t)
+    if ($t -match "pizza\s*=") { return $t }
+    $add = "bus = 'Bus Driver',`r`n            pizza = 'Pizza Delivery',`r`n            postal = 'GoPostal Courier',`r`n            electrician = 'Electrician',`r`n            vineyard = 'Vineyard Picker',`r`n            miner = 'Quarry Miner',`r`n            lumberjack = 'Lumberjack',"
+    return ($t -replace "bus\s*=\s*'Bus Driver',", $add)
+}
