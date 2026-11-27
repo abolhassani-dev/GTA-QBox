@@ -39,3 +39,19 @@ Edit-File (Join-Path $Res '[standalone]\scully_emotemenu\fxmanifest.lua') {
     param($t)
     return ($t -replace "(?m)^\s*'server/version_check\.lua',\s*\r?\n", '')
 }
+
+# 5. death / respawn (Mars settings)
+#    - keep the inventory when respawning at the hospital (Qbox default wipes it)
+#    - shorter death and last-stand timers (Qbox default 300 s)
+Edit-File (Join-Path $Res '[qbx-jobs]\qbx_ambulancejob\config\server.lua') {
+    param($t)
+    return ($t -replace 'wipeInvOnRespawn\s*=\s*true', 'wipeInvOnRespawn = false')
+}
+Edit-File (Join-Path $Res '[qbx-jobs]\qbx_ambulancejob\config\client.lua') {
+    param($t)
+    return ($t -replace 'laststandTimer\s*=\s*\d+', 'laststandTimer = 180')
+}
+Edit-File (Join-Path $Res '[qbx]\qbx_medical\config\client.lua') {
+    param($t)
+    return ($t -replace 'deathTime\s*=\s*\d+', 'deathTime = 180')
+}
