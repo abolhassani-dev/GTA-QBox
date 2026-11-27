@@ -94,3 +94,12 @@ Edit-File (Join-Path $Res '[police]\ps_lib\bridge\framework\qbx\server.lua') {
     $t = $t -replace "(?m)^([ \t]*)local player = ps\.getPlayer\(source\)[ \t]*\r?$", "`$1local player = ps.getPlayer(source)`r`n`$1if not player then return nil end"
     return "-- mars: nil-safe player lookups`r`n" + $t
 }
+
+# 10. qbx_adminmenu "Give Item": the plain text box only accepted item codes
+#     (goldbar), so "Gold Bar" did nothing -> open the mars_give search menu
+#     (search by name or label, A-Z list with pictures) for the selected player
+Edit-File (Join-Path $Res '[qbx]\qbx_adminmenu\client\player.lua') {
+    param($t)
+    if ($t -match 'mars_give:client:open') { return $t }
+    return ($t -replace "(?s)local dialog = lib\.inputDialog\('Give Item'.*?ExecuteCommand\('giveitem '[^\r\n]*", "TriggerEvent('mars_give:client:open', '', selectedPlayer.id, 1)")
+}
