@@ -9,7 +9,7 @@
 
 مشخصات پروژه:
 - پلتفرم: VMP (vmp.ir) – فورک ایرانی FiveM. فریم‌ورک: QBox (qbx_core + oxmysql + ox_lib + ox_inventory + ox_target). اسکریپت‌های QBCore باید از طریق bridge کار کنند.
-- این سرور (ویندوز، ترکیه، ۸ هسته، ۱۶ گیگ) سرور ساخت و تست است. افتتاح احتمالاً روی سرور ایران (پارس‌پک) خواهد بود، پس همه‌چیز باید در گیت باشد و قابل انتقال.
+- این کامپیوتر (ویندوز، لوکال) سیستم ساخت و تست است. افتتاح روی یک سرور جدا با CPU نوع host خواهد بود، پس همه‌چیز باید در گیت باشد و قابل انتقال.
 - ریپو: https://github.com/abolhassani-dev/GTA-QBox  برنچ: claude/loving-hawking-i12niz
   داخلش README.md (نقشه‌ی راه)، server-data/server.cfg، server-data/secrets.example.cfg و docs/ هست.
 
@@ -19,10 +19,11 @@
 3. txAdmin recipe احتمالاً روی VMP کار نمی‌کند؛ نصب دستی.
 4. رمزها فقط در server-data/secrets.cfg (gitignore شده). هیچ رمزی در گیت یا چت نیاید.
 
-قدم اول (مرحله ۱ نقشه‌ی راه):
-- Git را نصب کن (winget) و ریپو را در C:\MarsCommunity کلون کن (برنچ بالا).
-- vmp.ir از این سرور باز می‌شود (تست شده). از سایت و Installation Guide پیدا کن فایل‌های سرور VMP از کجا دانلود می‌شوند.
-- MariaDB نصب کن، دیتابیس mars_community و کاربر marsuser بساز.
-- QBox و وابستگی‌ها را در server-data/resources بگذار (نسخه‌ها را پین کن)، سرور را اجرا کن، خطاها را رفع کن تا من بتوانم وارد شوم و کاراکتر بسازم.
+وضعیت فعلی: نصب‌کننده (tools/install.ps1) و mars_identity آماده و روی ویندوز تست شده‌اند. CLAUDE.md و docs/02-nasb-payeh.md را بخوان.
+قدم بعدی:
+- اگر ریپو در C:\MarsCommunity\GTA-QBox نیست، کلونش کن (برنچ بالا).
+- پیش‌نیازها: Git، MariaDB 11.8، 7-Zip، آرتیفکت VMP 100301 از artifact.vmp.ir در پوشه‌ی artifacts.
+- tools\install.bat را اجرا کن (رمز root را من تایپ می‌کنم)، بعد start.bat. لاگ‌ها در logs\ هستند.
+- خطاها را رفع کن تا من با کلاینت VMP به 127.0.0.1:30120 وصل شوم و کاراکتر بسازم.
 - هر قدم را commit و push کن، و برای هر کاری که من باید بکنم راهنمای فارسی خیلی ساده بنویس.
 ```
