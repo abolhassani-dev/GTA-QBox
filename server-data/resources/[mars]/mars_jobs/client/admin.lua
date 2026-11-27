@@ -1,6 +1,6 @@
 -- /jobadmin – job admin panel (the server checks admin rights on every action)
 
-local openMain, openPlayers, openJobs, openWork, openOverview
+local openMain, openPlayers, openJobs, openWork, openOverview, gradeActions, openTakeJob
 
 local function result(ok, msg)
     lib.notify({ title = 'Job admin', description = msg, type = ok and 'success' or 'error' })
@@ -99,6 +99,39 @@ local function editGrade(job, g)
     openJob(job)
 end
 
+-- choose an online player, then give them job + grade
+local function giveToPlayer(job, g, back)
+    local players = lib.callback.await('mars_jobs:admin:players', false) or {}
+    local options = {}
+    for _, p in ipairs(players) do
+        options[#options + 1] = {
+            title = ('[%d] %s'):format(p.id, p.char),
+            description = ('now: %s – %s'):format(p.jobLabel or p.job, p.gradeName),
+            onSelect = function()
+                result(lib.callback.await('mars_jobs:admin:setJob', false, p.id, job.name, g.level))
+                back()
+            end,
+        }
+    end
+    if #options == 0 then options[1] = { title = 'No players online', readOnly = true } end
+    lib.registerContext({ id = 'mars_jobadmin_giveto', title = ('Give %s – %s to...'):format(job.label, g.name), menu = 'mars_jobadmin_gradeact', options = options })
+    lib.showContext('mars_jobadmin_giveto')
+end
+
+gradeActions = function(job, g)
+    lib.registerContext({
+        id = 'mars_jobadmin_gradeact', title = ('%s – %s'):format(job.label, g.name), menu = 'mars_jobadmin_job',
+        options = {
+            { title = 'Give to me', description = ('Make yourself %s %s'):format(job.label, g.name), icon = 'fa-solid fa-user-check',
+              onSelect = function() result(lib.callback.await('mars_jobs:admin:setJob', false, cache.serverId, job.name, g.level)) end },
+            { title = 'Give to a player ▸', icon = 'fa-solid fa-user-plus', arrow = true,
+              onSelect = function() giveToPlayer(job, g, function() openJob(job) end) end },
+            { title = 'Edit name / salary / boss', icon = 'fa-solid fa-pen', onSelect = function() editGrade(job, g) end },
+        },
+    })
+    lib.showContext('mars_jobadmin_gradeact')
+end
+
 openJob = function(job)
     local options = {
         { title = ('Label: %s'):format(job.label), description = ('id: %s • type: %s'):format(job.name, job.type or 'none'), icon = 'fa-solid fa-pen',
@@ -121,8 +154,8 @@ openJob = function(job)
     for _, g in ipairs(job.grades) do
         options[#options + 1] = {
             title = ('Grade %d – %s%s'):format(g.level, g.name, g.isboss and ' (boss)' or ''),
-            description = ('Salary $%d • click to edit'):format(g.payment), icon = 'fa-solid fa-ranking-star',
-            onSelect = function() editGrade(job, g) end,
+            description = ('Salary $%d • give this grade to me or a player, or edit it'):format(g.payment), icon = 'fa-solid fa-ranking-star',
+            arrow = true, onSelect = function() gradeActions(job, g) end,
         }
     end
     options[#options + 1] = {
@@ -240,6 +273,32 @@ openWork = function()
     lib.showContext('mars_jobadmin_work')
 end
 
+openTakeJob = function()
+    local jobs = lib.callback.await('mars_jobs:admin:jobs', false) or {}
+    local options = {}
+    for _, job in ipairs(jobs) do
+        options[#options + 1] = {
+            title = job.label, description = ('%s • %d grades'):format(job.name, #job.grades), arrow = true,
+            onSelect = function()
+                local gopts = {}
+                for _, g in ipairs(job.grades) do
+                    gopts[#gopts + 1] = {
+                        title = ('%d – %s%s'):format(g.level, g.name, g.isboss and ' (boss)' or ''),
+                        description = ('Salary $%d'):format(g.payment),
+                        onSelect = function()
+                            result(lib.callback.await('mars_jobs:admin:setJob', false, cache.serverId, job.name, g.level))
+                        end,
+                    }
+                end
+                lib.registerContext({ id = 'mars_jobadmin_take_grade', title = ('%s – choose grade'):format(job.label), menu = 'mars_jobadmin_take', options = gopts })
+                lib.showContext('mars_jobadmin_take_grade')
+            end,
+        }
+    end
+    lib.registerContext({ id = 'mars_jobadmin_take', title = 'Take a job', menu = 'mars_jobadmin', options = options })
+    lib.showContext('mars_jobadmin_take')
+end
+
 openOverview = function()
     local jobs = lib.callback.await('mars_jobs:admin:jobs', false) or {}
     table.sort(jobs, function(a, b)
@@ -264,6 +323,7 @@ openMain = function()
     lib.registerContext({
         id = 'mars_jobadmin', title = 'Mars – Job Admin',
         options = {
+            { title = 'Take a job (me) ▸', description = 'Pick any job and grade for yourself', icon = 'fa-solid fa-id-badge', arrow = true, onSelect = function() openTakeJob() end },
             { title = 'Overview ▸', description = 'Every job with how many people work there right now', icon = 'fa-solid fa-table-list', arrow = true, onSelect = function() openOverview() end },
             { title = 'Players ▸', description = 'See everyone\'s job, set job and grade, duty, fire', icon = 'fa-solid fa-users', arrow = true, onSelect = openPlayers },
             { title = 'Jobs ▸', description = 'Create jobs, edit grades and salaries', icon = 'fa-solid fa-briefcase', arrow = true, onSelect = openJobs },
