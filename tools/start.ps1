@@ -40,9 +40,8 @@ if (-not (Test-Port 3306)) {
         }
         if ($daemon) {
             $ini = Join-Path (Split-Path -Parent $daemon.Directory.FullName) 'data\my.ini'
-            $args = @()
-            if (Test-Path $ini) { $args += "--defaults-file=$ini" }
-            Start-Process -FilePath $daemon.FullName -ArgumentList $args -WindowStyle Hidden
+            if (Test-Path $ini) { Start-Process -FilePath $daemon.FullName -ArgumentList "--defaults-file=`"$ini`"" -WindowStyle Hidden }
+            else                { Start-Process -FilePath $daemon.FullName -WindowStyle Hidden }
             Write-Host "   started $($daemon.FullName)"
         } else {
             Write-Host '   MariaDB not found on any drive!' -ForegroundColor Red
