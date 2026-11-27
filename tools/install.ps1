@@ -162,8 +162,16 @@ if ([IO.File]::Exists($coreManifest)) {
 # ---------------------------------------------------------------------------
 Say 'Step 3/4 - database'
 # newer MariaDB versions ship mariadb.exe; older ones mysql.exe
-$mysql = Get-ChildItem 'C:\Program Files\MariaDB*\bin\mariadb.exe','C:\Program Files\MariaDB*\bin\mysql.exe' -ErrorAction SilentlyContinue |
-         Sort-Object FullName -Descending | Select-Object -First 1
+# MariaDB may be installed on any drive (e.g. D:\MariaDB 11.8 on a frozen-C: PC)
+$mysqlCandidates = @()
+foreach ($drv in (Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Root -match '^[A-Z]:\\$' })) {
+    foreach ($dir in 'Program Files\MariaDB*\bin', 'MariaDB*\bin', 'Program Files (x86)\MariaDB*\bin') {
+        foreach ($exe in 'mariadb.exe', 'mysql.exe') {
+            $mysqlCandidates += @(Get-ChildItem -Path (Join-Path $drv.Root "$dir\$exe") -ErrorAction SilentlyContinue)
+        }
+    }
+}
+$mysql = $mysqlCandidates | Sort-Object @{ Expression = { $_.Name -eq 'mariadb.exe' }; Descending = $true }, FullName | Select-Object -First 1
 $secrets = Join-Path $Data 'secrets.cfg'
 
 if (-not $mysql) {
