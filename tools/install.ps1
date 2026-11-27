@@ -139,7 +139,9 @@ if (Test-Path $coreManifest) {
 
 # ---------------------------------------------------------------------------
 Say 'Step 3/4 - database'
-$mysql = Get-ChildItem 'C:\Program Files\MariaDB*\bin\mysql.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+# newer MariaDB versions ship mariadb.exe; older ones mysql.exe
+$mysql = Get-ChildItem 'C:\Program Files\MariaDB*\bin\mariadb.exe','C:\Program Files\MariaDB*\bin\mysql.exe' -ErrorAction SilentlyContinue |
+         Sort-Object FullName -Descending | Select-Object -First 1
 $secrets = Join-Path $Data 'secrets.cfg'
 
 if (-not $mysql) {
