@@ -1,4 +1,6 @@
 # Mars Community 2 - starts the VMP server and saves the console output to logs\
+# -Interactive : no log file, but you can type commands into the server console
+param([switch]$Interactive)
 $Root  = Split-Path -Parent $PSScriptRoot
 $Data  = Join-Path $Root 'server-data'
 $Arts  = Join-Path $Root 'artifacts'
@@ -56,4 +58,9 @@ $log = Join-Path $Logs ('server-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '.log
 Write-Host "Starting $($exe.FullName)"
 Write-Host "Console is also saved to: $log`n" -ForegroundColor Cyan
 Set-Location $Data
-& $exe.FullName +set onesync on +exec server.cfg 2>&1 | Tee-Object -FilePath $log
+if ($Interactive) {
+    Write-Host 'Interactive mode: you can type server commands here (no log file).' -ForegroundColor Cyan
+    & $exe.FullName +set onesync on +exec server.cfg
+} else {
+    & $exe.FullName +set onesync on +exec server.cfg 2>&1 | Tee-Object -FilePath $log
+}
