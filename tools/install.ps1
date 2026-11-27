@@ -39,7 +39,8 @@ function Say($msg, $color = 'Cyan') { Write-Host "`n>>> $msg" -ForegroundColor $
 $Resources = @(
     # OX
     @{ group='[ox]'; name='oxmysql';       repo='overextended/oxmysql';       kind='release'; version='latest' }
-    @{ group='[ox]'; name='ox_lib';        repo='overextended/ox_lib';        kind='release'; version='latest' }
+    # ox_lib is pinned: 3.41+ needs the new 'require' resource that VMP does not ship
+    @{ group='[ox]'; name='ox_lib';        repo='overextended/ox_lib';        kind='release'; version='v3.40.3' }
     @{ group='[ox]'; name='ox_target';     repo='overextended/ox_target';     kind='release'; version='latest' }
     @{ group='[ox]'; name='ox_inventory';  repo='overextended/ox_inventory';  kind='release'; version='latest' }
     @{ group='[ox]'; name='ox_doorlock';   repo='overextended/ox_doorlock';   kind='release'; version='latest' }
