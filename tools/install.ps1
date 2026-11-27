@@ -84,7 +84,6 @@ $Resources = @(
     @{ group='[qbx-crime]'; name='qbx_bankrobbery';  repo='Qbox-project/qbx_bankrobbery';  kind='source'; ref='main' }
     @{ group='[qbx-crime]'; name='qbx_jewelery';     repo='Qbox-project/qbx_jewelery';     kind='source'; ref='main' }
     @{ group='[qbx-crime]'; name='qbx_houserobbery'; repo='Qbox-project/qbx_houserobbery'; kind='source'; ref='main' }
-    @{ group='[qbx-crime]'; name='qbx_pawnshop';     repo='Qbox-project/qbx_pawnshop';     kind='source'; ref='main' }
     @{ group='[qbx-crime]'; name='qbx_scrapyard';    repo='Qbox-project/qbx_scrapyard';    kind='source'; ref='main' }
     @{ group='[qbx-crime]'; name='qbx_streetraces';  repo='Qbox-project/qbx_streetraces';  kind='source'; ref='main' }
     # PHONE (npwd)

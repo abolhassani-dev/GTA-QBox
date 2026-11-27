@@ -721,4 +721,11 @@ return {
         weight = 500,
         description = 'Needed to turn coca leaves into cocaine.',
     },
+    -- ── Pawn shop goods (mars_pawnshop) ──
+    ['laptop']       = { label = 'Laptop',        weight = 2000, description = 'Worth something at the pawn shop.' },
+    ['tablet']       = { label = 'Tablet',        weight = 700,  description = 'Worth something at the pawn shop.' },
+    ['iphone']       = { label = 'iPhone',        weight = 200,  description = 'Worth something at the pawn shop.' },
+    ['samsungphone'] = { label = 'Samsung Phone', weight = 200,  description = 'Worth something at the pawn shop.' },
+    ['microwave']    = { label = 'Microwave',     weight = 8000, description = 'Heavy, but the pawn shop buys it.' },
+    ['painting']     = { label = 'Painting',      weight = 3000, description = 'Could be valuable.' },
 }

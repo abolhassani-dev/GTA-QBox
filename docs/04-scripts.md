@@ -11,6 +11,7 @@ QBox (qbx_core)، ox_lib، ox_inventory (کیف)، ox_target (Alt)، oxmysql، o
 | `mars_identity` | شناسایی بازیکن در VMP + ادمین با Citizen ID |
 | `mars_chat` | چت (T) و دستورهای `/ooc /me /do /f /w` |
 | `mars_drugs` | سیستم کامل مواد (راهنما: `03-mars-drugs.md`) |
+| `mars_pawnshop` | گروفروشی اختصاصی Mars Pawn & Gold (راهنما: `05-pawnshop.md`) – جایگزین qbx_pawnshop |
 | `mars_jobs` | پنل ادمین شغل `/jobadmin` + ۶ شغل کاری: پیک پیتزا، پستچی GoPostal، برق‌کار، انگورچین، معدن‌چی، هیزم‌شکن |
 
 ## اضافه‌شده در این نسخه
@@ -50,7 +51,6 @@ QBox (qbx_core)، ox_lib، ox_inventory (کیف)، ox_target (Alt)، oxmysql، o
 | `qbx_bankrobbery` | سرقت بانک (Fleeca، Paleto، Pacific) |
 | `qbx_jewelery` | سرقت جواهرفروشی |
 | `qbx_houserobbery` | دزدی از خانه‌ها |
-| `qbx_pawnshop` | فروش اجناس دزدی |
 | `qbx_scrapyard` | اوراق کردن ماشین دزدی |
 | `qbx_streetraces` | مسابقه‌ی خیابانی با شرط‌بندی |
 

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mars Pawn & Gold</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="hidden">
+    <div class="shell">
+      <header>
+        <div class="brand">
+          <div class="logo">M</div>
+          <div>
+            <div class="name" id="shop-name">Mars Pawn & Gold</div>
+            <div class="tag">Est. 1987 · Vinewood · Cash only, no questions</div>
+          </div>
+        </div>
+        <div class="rep">
+          <div class="rep-top"><span id="rep-label">Stranger</span><span id="rep-bonus">+0% prices</span></div>
+          <div class="bar"><div id="rep-fill"></div></div>
+          <div class="rep-next" id="rep-next"></div>
+        </div>
+        <div class="cash"><span>CASH</span><b id="cash">$0</b></div>
+        <button class="close" id="close" title="Close (Esc)">✕</button>
+      </header>
+
+      <nav>
+        <button data-tab="sell" class="active">◆ Sell</button>
+        <button data-tab="buy">⟲ Buy-back</button>
+        <button data-tab="smelter">♨ Smelter</button>
+        <button data-tab="history">☰ Ledger</button>
+        <button data-tab="black" id="tab-black">✖ Back room</button>
+      </nav>
+
+      <main>
+        <!-- SELL -->
+        <section id="sell" class="tab active">
+          <div class="hot-banner">
+            <div><b>🔥 Wanted today</b> <span id="hot-list"></span></div>
+            <div class="hot-timer">new list in <span id="hot-left"></span></div>
+          </div>
+          <div class="filters" id="filters"></div>
+          <div class="grid" id="sell-grid"></div>
+        </section>
+
+        <!-- BUY-BACK -->
+        <section id="buy" class="tab">
+          <p class="hint">Things other people pawned. Buy them back before someone else does.</p>
+          <div class="grid" id="buy-grid"></div>
+        </section>
+
+        <!-- SMELTER -->
+        <section id="smelter" class="tab">
+          <p class="hint">Melt jewelry into gold bars and diamonds. Melted goods are worth more and leave no trail.</p>
+          <div class="smelter">
+            <div class="furnace"><div class="glow"></div><div class="furnace-label">FURNACE</div></div>
+            <div class="jobs" id="smelt-jobs"></div>
+          </div>
+          <button class="btn gold wide" id="collect">Collect finished</button>
+          <h3>Melt something</h3>
+          <div class="grid" id="melt-grid"></div>
+        </section>
+
+        <!-- HISTORY -->
+        <section id="history" class="tab">
+          <table class="ledger">
+            <thead><tr><th>Ticket</th><th>Date</th><th>Item</th><th>Qty</th><th>Each</th><th>Total</th><th></th></tr></thead>
+            <tbody id="ledger"></tbody>
+          </table>
+        </section>
+
+        <!-- BLACK MARKET -->
+        <section id="black" class="tab">
+          <div id="black-locked" class="locked">
+            <div class="lock">🔒</div>
+            <h2>Staff only</h2>
+            <p id="black-why"></p>
+          </div>
+          <div id="black-open">
+            <p class="hint">"You didn't buy this here." — Cash only.</p>
+            <div class="grid" id="black-grid"></div>
+          </div>
+        </section>
+      </main>
+
+      <!-- detail drawer -->
+      <aside id="drawer" class="drawer">
+        <button class="drawer-close" id="drawer-close">✕</button>
+        <img id="d-img" alt="">
+        <div class="d-cat" id="d-cat"></div>
+        <h2 id="d-name"></h2>
+        <div class="d-price"><span>Offer each</span><b id="d-unit"></b></div>
+        <div class="d-qty">
+          <button id="q-minus">−</button>
+          <input id="q" type="range" min="1" value="1">
+          <button id="q-plus">+</button>
+          <span id="q-val">1</span>
+        </div>
+        <div class="d-total"><span>Total</span><b id="d-total"></b></div>
+        <div id="d-actions"></div>
+        <div class="d-note" id="d-note"></div>
+      </aside>
+
+      <!-- pawn ticket -->
+      <div id="ticket" class="ticket-wrap hidden">
+        <div class="ticket">
+          <div class="t-head">MARS PAWN &amp; GOLD<small>PAWN TICKET</small></div>
+          <div class="t-row"><span>No.</span><b id="t-no"></b></div>
+          <div class="t-row"><span>Date</span><b id="t-date"></b></div>
+          <div class="t-sep"></div>
+          <div class="t-row"><span id="t-item"></span><b id="t-qty"></b></div>
+          <div class="t-row"><span>Each</span><b id="t-unit"></b></div>
+          <div class="t-tags" id="t-tags"></div>
+          <div class="t-sep"></div>
+          <div class="t-row total"><span>PAID</span><b id="t-total"></b></div>
+          <div class="stamp">PAID</div>
+          <button class="btn gold wide" id="t-ok">Thanks</button>
+        </div>
+      </div>
+
+      <div id="toast" class="toast"></div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

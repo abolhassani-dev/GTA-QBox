@@ -63,3 +63,10 @@ Edit-File (Join-Path $Res '[qbx]\qbx_cityhall\config\shared.lua') {
     $add = "bus = 'Bus Driver',`r`n            pizza = 'Pizza Delivery',`r`n            postal = 'GoPostal Courier',`r`n            electrician = 'Electrician',`r`n            vineyard = 'Vineyard Picker',`r`n            miner = 'Quarry Miner',`r`n            lumberjack = 'Lumberjack',"
     return ($t -replace "bus\s*=\s*'Bus Driver',", $add)
 }
+
+# 7. the default qbx_pawnshop is replaced by mars_pawnshop
+$oldPawn = Join-Path $Res '[qbx-crime]\qbx_pawnshop'
+if ([IO.Directory]::Exists($oldPawn)) {
+    [IO.Directory]::Delete($oldPawn, $true)
+    Write-Host '   removed qbx_pawnshop (replaced by mars_pawnshop)'
+}
