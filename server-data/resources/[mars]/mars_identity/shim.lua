@@ -10,19 +10,32 @@
 
     Convars (server.cfg):
       set mars:identityShim "true"                       -- turn the shim on/off
-      set mars:licenseFallback "steam,discord,fivem,xbl,live"  -- priority order
+      set mars:licenseFallback "steam,discord,fivem,xbl,live,token"  -- priority order
+
+    Special fallback types:
+      token -> the player's first hardware token (GetPlayerToken), stable per PC
+      ip    -> the player's IP address. Only for LAN testing: on the internet
+               IPs change and are shared, so never use it on a public server.
 ]]
 
 if GetConvar('mars:identityShim', 'true') ~= 'true' then return end
 
 local fallbackOrder = {}
-for idType in GetConvar('mars:licenseFallback', 'steam,discord,fivem,xbl,live'):gmatch('[^,%s]+') do
+for idType in GetConvar('mars:licenseFallback', 'steam,discord,fivem,xbl,live,token'):gmatch('[^,%s]+') do
     fallbackOrder[#fallbackOrder + 1] = idType
 end
 
 local nativeGetNum = GetNumPlayerIdentifiers
 local nativeGetId = GetPlayerIdentifier
 local nativeGetByType = GetPlayerIdentifierByType
+local nativeGetNumTokens = GetNumPlayerTokens
+local nativeGetToken = GetPlayerToken
+
+---@param value string
+---@return string
+local function sanitize(value)
+    return (value:gsub('[^%w]', ''))
+end
 
 ---@param src string|integer
 ---@return string[]
@@ -43,9 +56,19 @@ local function buildIdentifiers(src)
     if byType.license or byType.license2 then return ids end
 
     for _, idType in ipairs(fallbackOrder) do
-        local id = byType[idType]
-        if id then
-            local synthetic = ('%s_%s'):format(idType, id:sub(#idType + 2))
+        local value
+        if idType == 'token' then
+            if nativeGetNumTokens and (nativeGetNumTokens(src) or 0) > 0 then
+                local token = nativeGetToken(src, 0)
+                if token and token ~= '' then value = sanitize(token):sub(1, 40) end
+            end
+        else
+            local id = byType[idType]
+            if id then value = sanitize(id:sub(#idType + 2)) end
+        end
+
+        if value and value ~= '' then
+            local synthetic = ('%s_%s'):format(idType, value)
             ids[#ids + 1] = 'license:' .. synthetic
             ids[#ids + 1] = 'license2:' .. synthetic
             break
