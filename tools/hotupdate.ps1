@@ -76,6 +76,12 @@ $pw = $null
 if (Test-Path $Secrets) {
     $m = Select-String -Path $Secrets -Pattern 'rcon_password\s+"([^"]+)"' | Select-Object -First 1
     if ($m) { $pw = $m.Matches[0].Groups[1].Value }
+    if (-not $pw) {
+        # create the password now; the server reads it at its next full start
+        $chars = [char[]]'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+        $pw = -join (1..24 | ForEach-Object { $chars | Get-Random })
+        Add-Content -Path $Secrets -Value "`r`nrcon_password `"$pw`"" -Encoding ASCII
+    }
 }
 
 function Send-Rcon([string]$cmd) {
@@ -96,12 +102,12 @@ if ($restart.Count -gt 0) {
     $ok = $false
     if ($pw) {
         $reply = Send-Rcon 'refresh'
-        $ok = $null -ne $reply -and $reply -notmatch 'Invalid password'
+        $ok = $null -ne $reply -and $reply -notmatch 'Invalid password|rcon_password'
     }
     if (-not $ok) {
-        Write-Host '   Could not reach the running server.' -ForegroundColor Yellow
-        Write-Host '   (Is the server running? The first time, the server must be restarted once with start.bat'
-        Write-Host '    so the remote console turns on. After that, hot-update.bat works without restarts.)'
+        Write-Host '   The live update could not reach the server - NOTHING was restarted.' -ForegroundColor Red
+        Write-Host '   Close the server window and run start.bat once (this turns the live update on).'
+        Write-Host '   After that, hot-update.bat works without restarts.'
     } else {
         foreach ($r in $restart) {
             $out = Send-Rcon "ensure $r"
