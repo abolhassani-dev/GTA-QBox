@@ -5,7 +5,7 @@ lua54 'yes'
 name 'mars_drugs'
 author 'Mars Community 2'
 description 'Mars drug system v2: cannabis, mushrooms, coca; quality, effects, in-game admin'
-version '2.0.0'
+version '2.0.2'
 
 shared_scripts {
     '@ox_lib/init.lua',

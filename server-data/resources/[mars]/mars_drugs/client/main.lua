@@ -504,8 +504,8 @@ end)
 -- selling to NPCs
 -- ─────────────────────────────────────────────────────────────
 
--- ped types that never buy: 6 cop, 27 swat, 29 army
-local noBuyerTypes = { [6] = true, [27] = true, [29] = true }
+-- ped types that never buy: 6 cop, 27 swat, 28 animal, 29 army
+local noBuyerTypes = { [6] = true, [27] = true, [28] = true, [29] = true }
 
 local function hasSellable()
     local seen = {}
@@ -572,3 +572,5 @@ AddEventHandler('onResourceStop', function(name)
     despawnLab()
     if shopPed then DeleteEntity(shopPed) end
 end)
+
+print(('^2[mars_drugs] client version %s loaded^0'):format(GetResourceMetadata(GetCurrentResourceName(), 'version', 0)))
