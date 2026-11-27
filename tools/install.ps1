@@ -56,6 +56,7 @@ $Resources = @(
     @{ group='[qbx]'; name='qbx_spawn';          repo='Qbox-project/qbx_spawn';          kind='release'; version='latest' }
     @{ group='[qbx]'; name='qbx_customs';        repo='Qbox-project/qbx_customs';        kind='release'; version='latest' }
     @{ group='[qbx]'; name='qbx_radio';          repo='Qbox-project/qbx_radio';          kind='release'; version='latest' }
+    @{ group='[qbx]'; name='qbx_drugs';          repo='Qbox-project/qbx_drugs';          kind='source';  ref='main' }
     # STANDALONE
     @{ group='[standalone]'; name='bob74_ipl';           repo='Bob74/bob74_ipl';                      kind='source';  ref='master' }
     @{ group='[standalone]'; name='illenium-appearance'; repo='iLLeniumStudios/illenium-appearance';   kind='release'; version='latest' }
@@ -197,7 +198,8 @@ FLUSH PRIVILEGES;
         $sqlFiles = @(
             (Join-Path $PSScriptRoot 'qbox.sql'),
             (Join-Path $Res '[qbx]\qbx_core\qbx_core.sql'),
-            (Join-Path $Res '[qbx]\qbx_vehicles\vehicles.sql')
+            (Join-Path $Res '[qbx]\qbx_vehicles\vehicles.sql'),
+            (Join-Path $Res '[qbx]\qbx_drugs\qbx_drugs.sql')
         )
         foreach ($f in $sqlFiles) {
             if ([IO.File]::Exists($f)) {
