@@ -134,9 +134,7 @@ Expand-Archive -Path $zip -DestinationPath $unz -Force
 $cfxDest = Join-Path $Res '[cfx-default]'
 Remove-Dir $cfxDest
 [IO.Directory]::Move((Join-Path (Get-ChildItem -LiteralPath $unz | Select-Object -First 1).FullName 'resources'), $cfxDest)
-# Qbox uses the built-in system chat, so the old chat resource is removed
-$oldChat = Join-Path $cfxDest '[gameplay]\chat'
-Remove-Dir $oldChat
+# The classic chat resource is kept: the VMP client has no built-in system chat
 
 foreach ($r in $Resources) {
     try { Install-Resource $r; Start-Sleep -Milliseconds 500 }
