@@ -72,13 +72,19 @@ function Get-Zip($url, $out) {
     throw "Could not download $url"
 }
 
+# Folder names like [ox] contain square brackets, which PowerShell cmdlets treat
+# as wildcards. These helpers use .NET directly so brackets are taken literally.
+function Remove-Dir($p)  { if ([IO.Directory]::Exists($p)) { [IO.Directory]::Delete($p, $true) } }
+function Ensure-Dir($p)  { [void][IO.Directory]::CreateDirectory($p) }
+$Utf8NoBom = New-Object Text.UTF8Encoding($false)
+
 function Install-Resource($r) {
     $groupDir = Join-Path $Res $r.group
     $dest     = Join-Path $groupDir $r.name
     $zip      = Join-Path $Tmp ($r.name + '.zip')
     $unz      = Join-Path $Tmp ($r.name + '-unzipped')
-    New-Item -ItemType Directory -Force -Path $groupDir | Out-Null
-    if (Test-Path $unz) { Remove-Item $unz -Recurse -Force }
+    Ensure-Dir $groupDir
+    Remove-Dir $unz
 
     if ($r.kind -eq 'release') {
         if ($r.version -eq 'latest') { $url = "https://github.com/$($r.repo)/releases/latest/download/$($r.name).zip" }
@@ -96,25 +102,25 @@ function Install-Resource($r) {
                 Sort-Object { $_.FullName.Length } | Select-Object -First 1
     if (-not $manifest) { throw "No fxmanifest.lua found in $($r.name)" }
 
-    if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
-    Move-Item -Path $manifest.Directory.FullName -Destination $dest
+    Remove-Dir $dest
+    [IO.Directory]::Move($manifest.Directory.FullName, $dest)
 }
 
 # ---------------------------------------------------------------------------
 Say 'Step 1/4 - downloading resources (this takes a few minutes)'
 # cfx default resources (mapmanager, spawnmanager, ...)
-$cfx = @{ group='[cfx-default]'; name='cfx-server-data'; repo='citizenfx/cfx-server-data'; kind='source'; ref='master' }
 $zip = Join-Path $Tmp 'cfx.zip'; $unz = Join-Path $Tmp 'cfx-unzipped'
-if (Test-Path $unz) { Remove-Item $unz -Recurse -Force }
+Ensure-Dir $Res
+Remove-Dir $unz
 Write-Host "   - cfx-server-data"
 Get-Zip "https://github.com/citizenfx/cfx-server-data/archive/refs/heads/master.zip" $zip
 Expand-Archive -Path $zip -DestinationPath $unz -Force
 $cfxDest = Join-Path $Res '[cfx-default]'
-if (Test-Path $cfxDest) { Remove-Item $cfxDest -Recurse -Force }
-Move-Item -Path (Join-Path (Get-ChildItem $unz | Select-Object -First 1).FullName 'resources') -Destination $cfxDest
+Remove-Dir $cfxDest
+[IO.Directory]::Move((Join-Path (Get-ChildItem -LiteralPath $unz | Select-Object -First 1).FullName 'resources'), $cfxDest)
 # Qbox uses the built-in system chat, so the old chat resource is removed
 $oldChat = Join-Path $cfxDest '[gameplay]\chat'
-if (Test-Path $oldChat) { Remove-Item $oldChat -Recurse -Force }
+Remove-Dir $oldChat
 
 $failed = @()
 foreach ($r in $Resources) {
@@ -123,16 +129,17 @@ foreach ($r in $Resources) {
 }
 
 # ox_inventory item list from the Qbox recipe
-Copy-Item (Join-Path $PSScriptRoot 'ox_items.lua') (Join-Path $Res '[ox]\ox_inventory\data\items.lua') -Force
+$invData = Join-Path $Res '[ox]\ox_inventory\data'
+if ([IO.Directory]::Exists($invData)) { [IO.File]::Copy((Join-Path $PSScriptRoot 'ox_items.lua'), (Join-Path $invData 'items.lua'), $true) }
 
 # ---------------------------------------------------------------------------
 Say 'Step 2/4 - patching qbx_core for VMP (identity shim)'
 $coreManifest = Join-Path $Res '[qbx]\qbx_core\fxmanifest.lua'
-if (Test-Path $coreManifest) {
-    $text = Get-Content $coreManifest -Raw
+if ([IO.File]::Exists($coreManifest)) {
+    $text = [IO.File]::ReadAllText($coreManifest)
     if ($text -notmatch '@mars_identity/shim.lua') {
         $text = $text -replace "server_scripts\s*\{", "server_scripts {`r`n    '@mars_identity/shim.lua',"
-        Set-Content -Path $coreManifest -Value $text -Encoding UTF8
+        [IO.File]::WriteAllText($coreManifest, $text, $Utf8NoBom)
         Write-Host '   qbx_core patched.'
     } else { Write-Host '   already patched.' }
 } else { Write-Host '   qbx_core is missing - patch skipped!' -ForegroundColor Red }
@@ -179,9 +186,9 @@ FLUSH PRIVILEGES;
             (Join-Path $Res '[qbx]\qbx_vehicles\vehicles.sql')
         )
         foreach ($f in $sqlFiles) {
-            if (Test-Path $f) {
+            if ([IO.File]::Exists($f)) {
                 Write-Host "   importing $(Split-Path $f -Leaf)"
-                Get-Content $f -Raw | & $mysql.FullName -u root mars_community
+                [IO.File]::ReadAllText($f) | & $mysql.FullName -u root mars_community
                 if ($LASTEXITCODE -ne 0) { Write-Host "   (errors above are OK if the tables already existed)" -ForegroundColor Yellow }
             } else { Write-Host "   missing SQL file: $f" -ForegroundColor Yellow }
         }
