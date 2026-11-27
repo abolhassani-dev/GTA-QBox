@@ -22,6 +22,13 @@ if (-not (Test-Path (Join-Path $Data 'secrets.cfg'))) {
     exit 1
 }
 
+# --- keep ox_inventory's item list in sync with tools\ox_items.lua (new Mars items) ---
+$itemsSrc = Join-Path $PSScriptRoot 'ox_items.lua'
+$itemsDst = Join-Path $Data 'resources\[ox]\ox_inventory\data\items.lua'
+if ([IO.File]::Exists($itemsSrc) -and [IO.Directory]::Exists([IO.Path]::GetDirectoryName($itemsDst))) {
+    [IO.File]::Copy($itemsSrc, $itemsDst, $true)
+}
+
 # --- make sure MariaDB is running (it may live on D: without a Windows service) ---
 function Test-Port($port) {
     try { $c = New-Object Net.Sockets.TcpClient; $c.Connect('127.0.0.1', $port); $c.Close(); return $true } catch { return $false }

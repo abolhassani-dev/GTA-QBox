@@ -643,4 +643,32 @@ return {
         label = 'Handcuffs',
         weight = 200,
     },
+    -- ── Mars drugs (mars_drugs) ── strain/quality live in metadata
+    ['mars_weed_seed'] = {
+        label = 'بذر ماری‌جوانا',
+        weight = 5,
+        description = 'برای کاشت استفاده کنید (فقط در فضای باز).',
+        client = { image = 'weed_og-kush_seed.png' },
+    },
+
+    ['mars_weed_wet'] = {
+        label = 'گل خیس',
+        weight = 40,
+        description = 'باید روی خشک‌کن خشک شود.',
+        client = { image = 'weed_white-widow.png' },
+    },
+
+    ['mars_weed_dry'] = {
+        label = 'گل خشک',
+        weight = 25,
+        description = 'با کیسه‌ی خالی روی میز بسته‌بندی کنید.',
+        client = { image = 'weed_skunk.png' },
+    },
+
+    ['mars_weed_bag'] = {
+        label = 'بسته‌ی گل',
+        weight = 30,
+        description = 'آماده‌ی فروش.',
+        client = { image = 'weed_og-kush.png' },
+    },
 }
