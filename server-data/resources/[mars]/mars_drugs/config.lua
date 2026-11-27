@@ -198,7 +198,7 @@ Config.Selling = {
 }
 
 Config.Props = {
-    rack  = `bkr_prop_weed_drying_01a`,
+    rack  = `bkr_prop_weed_drying_02a`,
     table = `bkr_prop_weed_table_01a`,
     rackFallback  = `prop_rub_table_02`,
     tableFallback = `prop_table_03`,
@@ -284,6 +284,10 @@ function Config.SetPath(path, value)
     for i = 1, #keys - 1 do
         node = node[keys[i]]
         if type(node) ~= 'table' then return false end
+    end
+    -- positions saved in the database come back as plain {x,y,z,w} tables
+    if type(value) == 'table' and value.x and value.y and value.z then
+        value = value.w and vec4(value.x, value.y, value.z, value.w) or vec3(value.x, value.y, value.z)
     end
     node[keys[#keys]] = value
     return true

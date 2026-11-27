@@ -1,6 +1,8 @@
 local plants = {}       -- [id] = plant (from server)
 local plantObjects = {} -- [id] = { entity, model, dead }
 local labEntities = {}
+local labSnapped = false
+local shopSnapped = false
 local shopPed
 local soldPeds = {}
 
@@ -20,12 +22,26 @@ end
 
 local function groundZ(x, y, z)
     RequestCollisionAtCoord(x, y, z)
-    for _ = 1, 20 do
+    for _ = 1, 25 do
+        -- look just above first (so roofs/trees are ignored), then from high up
         local found, gz = GetGroundZFor_3dCoord(x, y, z + 2.0, false)
         if found then return gz end
-        Wait(50)
+        found, gz = GetGroundZFor_3dCoord(x, y, z + 50.0, false)
+        if found then return gz end
+        Wait(40)
     end
     return z
+end
+
+-- re-place an entity on the real ground once its collision is loaded
+local function snapToGround(entity, isPed)
+    if not DoesEntityExist(entity) then return end
+    local c = GetEntityCoords(entity)
+    local z = groundZ(c.x, c.y, c.z)
+    FreezeEntityPosition(entity, false)
+    SetEntityCoordsNoOffset(entity, c.x, c.y, z, false, false, false)
+    if not isPed then PlaceObjectOnGroundProperly(entity) end
+    FreezeEntityPosition(entity, true)
 end
 
 local function modelFor(p)
@@ -58,6 +74,9 @@ end
 
 RegisterNetEvent('mars_drugs:client:setting', function(path, value)
     Config.SetPath(path, value)
+    if path:match('^Lab%.') or path:match('^Shop%.coords') then
+        TriggerEvent('mars_drugs:client:respawnPlaces')
+    end
 end)
 
 local function loadSettings()
@@ -152,7 +171,9 @@ end
 local function spawnObject(p)
     local model = modelFor(p)
     if not loadModel(model) then return end
-    local entity = CreateObject(model, p.coords.x, p.coords.y, p.coords.z, false, false, false)
+    local z = groundZ(p.coords.x, p.coords.y, p.coords.z)
+    local entity = CreateObject(model, p.coords.x, p.coords.y, z, false, false, false)
+    PlaceObjectOnGroundProperly(entity)
     FreezeEntityPosition(entity, true)
     SetEntityAsMissionEntity(entity, true, true)
     if p.dead then SetEntityAlpha(entity, 140, false) end
@@ -180,8 +201,48 @@ CreateThread(function()
     end
 end)
 
+-- live status floating above plants within a few metres
+local function draw3d(x, y, z, text)
+    SetTextScale(0.32, 0.32); SetTextFont(4); SetTextColour(255, 255, 255, 230)
+    SetTextOutline(); SetTextCentre(true)
+    SetDrawOrigin(x, y, z, 0)
+    BeginTextCommandDisplayText('STRING'); AddTextComponentSubstringPlayerName(text); EndTextCommandDisplayText(0.0, 0.0)
+    ClearDrawOrigin()
+end
+
+CreateThread(function()
+    while true do
+        local pos, any = GetEntityCoords(cache.ped), false
+        for id, p in pairs(plants) do
+            local obj = plantObjects[id]
+            if obj and #(pos - p.coords) < 6.0 then
+                any = true
+                local c = GetEntityCoords(obj.entity)
+                local status
+                if p.dead then status = '~r~Dead'
+                elseif p.growth >= 100 then status = '~g~Ready to harvest'
+                else
+                    local g = math.min(99.9, p.growth + (p.rate or 0) * (GetGameTimer() - (p.syncedAt or 0)))
+                    status = ('Growth ~g~%.1f%%~s~  |  Water ~b~%d%%~s~  |  Food ~y~%d%%'):format(g, math.floor(p.water), math.floor(p.food))
+                end
+                draw3d(c.x, c.y, c.z + 1.2, ('%s~n~%s'):format(strainLabel(p.strain), status))
+            end
+        end
+        Wait(any and 0 or 500)
+    end
+end)
+
 local function setPlant(p)
     p.coords = vec3(p.coords.x, p.coords.y, p.coords.z)
+    local old, now = plants[p.id], GetGameTimer()
+    -- remember how fast it grows, so the text can count up smoothly between updates
+    if old and old.syncedAt and p.growth > old.growth then
+        p.rate = (p.growth - old.growth) / math.max(1, now - old.syncedAt)
+    else
+        p.rate = old and old.rate or 0
+    end
+    if p.dead or p.growth >= 100 then p.rate = 0 end
+    p.syncedAt = now
     plants[p.id] = p
 end
 
@@ -324,6 +385,7 @@ local function spawnLabProp(model, fallback, c, options)
     SetModelAsNoLongerNeeded(model)
     exports.ox_target:addLocalEntity(entity, options)
     labEntities[#labEntities + 1] = entity
+    labSnapped = false
 end
 
 local function spawnLab()
@@ -347,6 +409,27 @@ end
 -- seed shop NPC
 -- ─────────────────────────────────────────────────────────────
 
+local function openSeedShop()
+    local list = lib.callback.await('mars_drugs:server:shopList', false) or {}
+    local options = {}
+    for i, it in ipairs(list) do
+        options[#options + 1] = {
+            title = ('%s  –  $%d'):format(it.label, it.price), description = it.description,
+            icon = it.seed and 'fa-solid fa-seedling' or 'fa-solid fa-box',
+            image = ('nui://ox_inventory/web/images/%s.png'):format(it.image or it.name),
+            onSelect = function()
+                local input = lib.inputDialog(it.label, {
+                    { type = 'number', label = ('Amount ($%d each)'):format(it.price), default = 1, min = 1, max = 50, required = true },
+                })
+                if input then notify(lib.callback.await('mars_drugs:server:shopBuy', false, i, input[1])) end
+                openSeedShop()
+            end,
+        }
+    end
+    lib.registerContext({ id = 'mars_drugs_shop', title = Config.Shop.blip.label, options = options })
+    lib.showContext('mars_drugs_shop')
+end
+
 local function spawnShopPed()
     local c = Config.Shop.coords
     if not loadModel(Config.Shop.ped) then return end
@@ -359,8 +442,9 @@ local function spawnShopPed()
     SetModelAsNoLongerNeeded(Config.Shop.ped)
     exports.ox_target:addLocalEntity(shopPed, {
         { name = 'mars_shop', icon = 'fa-solid fa-store', label = 'Buy seeds & supplies',
-          onSelect = function() exports.ox_inventory:openInventory('shop', { type = 'mars_drugs_shop' }) end },
+          onSelect = function() openSeedShop() end },
     })
+    shopSnapped = false
 end
 
 CreateThread(function()
@@ -391,7 +475,15 @@ CreateThread(function()
         local labNear = #(pos - Config.Lab.table.xyz) < 80.0
         if labNear and #labEntities == 0 then spawnLab()
         elseif not labNear and #labEntities > 0 then despawnLab() end
-        Wait(2000)
+
+        if shopPed and not shopSnapped and #(pos - Config.Shop.coords.xyz) < 30.0 then
+            snapToGround(shopPed, true); shopSnapped = true
+        end
+        if #labEntities > 0 and not labSnapped and #(pos - Config.Lab.table.xyz) < 30.0 then
+            for _, e in ipairs(labEntities) do snapToGround(e, false) end
+            labSnapped = true
+        end
+        Wait(1000)
     end
 end)
 
@@ -443,6 +535,11 @@ end)
 -- ─────────────────────────────────────────────────────────────
 -- lifecycle
 -- ─────────────────────────────────────────────────────────────
+
+AddEventHandler('mars_drugs:client:respawnPlaces', function()
+    despawnLab()
+    if shopPed then exports.ox_target:removeLocalEntity(shopPed); DeleteEntity(shopPed); shopPed = nil end
+end)
 
 AddEventHandler('QBCore:Client:OnPlayerLoaded', loadPlants)
 AddEventHandler('onResourceStart', function(name)

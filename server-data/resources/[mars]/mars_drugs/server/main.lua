@@ -493,6 +493,48 @@ CreateThread(function()
     MarsDrugs.registerShop()
 end)
 
+-- our own shop menu (the NPC talks to these, no ox_inventory shop needed)
+local function shopItems()
+    local list = {}
+    for _, key in ipairs(Config.StrainOrder) do
+        local s = Config.Strains[key]
+        if s and s.enabled ~= false then
+            local meta = Config.SeedMeta(key)
+            list[#list + 1] = { name = 'mars_seed', label = meta.label, description = meta.description,
+                                price = s.seedPrice, metadata = meta, seed = true }
+        end
+    end
+    for _, item in ipairs(Config.Shop.extra) do
+        local def = exports.ox_inventory:Items(item.name)
+        list[#list + 1] = { name = item.name, label = def and def.label or item.name, price = item.price }
+    end
+    return list
+end
+
+lib.callback.register('mars_drugs:server:shopList', function()
+    local list = shopItems()
+    for _, it in ipairs(list) do it.metadata = nil end
+    return list
+end)
+
+lib.callback.register('mars_drugs:server:shopBuy', function(src, index, amount)
+    if not near(src, Config.Shop.coords.xyz, 6.0) then return false, 'You are too far from the shop.' end
+    local item = shopItems()[tonumber(index) or 0]
+    amount = math.floor(tonumber(amount) or 0)
+    if not item or amount < 1 or amount > 50 then return false, 'Invalid amount.' end
+    if not exports.ox_inventory:CanCarryItem(src, item.name, amount, item.metadata) then
+        return false, 'You cannot carry that much.'
+    end
+    local player = getPlayer(src)
+    if not player then return false, 'Try again.' end
+    local cost = item.price * amount
+    local paid = player.Functions.RemoveMoney('cash', cost, 'garden-supplies')
+        or player.Functions.RemoveMoney('bank', cost, 'garden-supplies')
+    if not paid then return false, ('You need $%d (cash or bank).'):format(cost) end
+    exports.ox_inventory:AddItem(src, item.name, amount, item.metadata)
+    return true, ('Bought %d × %s for $%d.'):format(amount, item.label, cost)
+end)
+
 -- ─────────────────────────────────────────────────────────────
 -- admin test commands
 -- ─────────────────────────────────────────────────────────────

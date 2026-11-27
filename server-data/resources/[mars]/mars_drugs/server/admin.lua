@@ -57,6 +57,24 @@ lib.callback.register('mars_drugs:admin:set', function(src, path, value)
     return true, ('Saved: %s = %s'):format(path, tostring(value))
 end)
 
+-- move the drying rack / processing table / shop NPC to where the admin stands
+local placePaths = { rack = 'Lab.rack', table = 'Lab.table', shop = 'Shop.coords' }
+lib.callback.register('mars_drugs:admin:moveHere', function(src, place)
+    if not isAdmin(src) then return false, 'No permission.' end
+    local path = placePaths[place]
+    if not path then return false, 'Unknown place.' end
+    local ped = GetPlayerPed(src)
+    local c, h = GetEntityCoords(ped), GetEntityHeading(ped)
+    -- props face the admin; the NPC faces the same way the admin looks
+    local w = place == 'shop' and h or (h + 180.0) % 360.0
+    local value = { x = c.x, y = c.y, z = c.z - 1.0, w = w }
+    MarsDrugs.applyOverride(path, value)
+    MySQL.query('REPLACE INTO mars_drugs_settings (path, value) VALUES (?, ?)', { path, json.encode(value) })
+    TriggerClientEvent('mars_drugs:client:setting', -1, path, value)
+    print(('[mars_drugs] %s moved %s to %.2f, %.2f, %.2f'):format(GetPlayerName(src), path, c.x, c.y, c.z))
+    return true, 'Moved. Step back a little to see it.'
+end)
+
 lib.callback.register('mars_drugs:admin:reset', function(src)
     if not isAdmin(src) then return false, 'No permission.' end
     for path in pairs(MarsDrugs.overrides) do

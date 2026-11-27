@@ -95,6 +95,26 @@ openMain = function()
     options[#options + 1] = { title = 'Strains ▸', description = 'Prices, growth speed, harvest size, enable/disable', icon = 'fa-solid fa-seedling', arrow = true, onSelect = openStrains }
     options[#options + 1] = { title = 'Effects ▸', description = 'Duration, intensity, stress relief, armor, run speed', icon = 'fa-solid fa-wand-magic-sparkles', arrow = true, onSelect = openEffects }
     options[#options + 1] = {
+        title = 'Locations ▸', description = 'Move the drying rack, processing table or seed shop NPC to you',
+        icon = 'fa-solid fa-location-dot', arrow = true,
+        onSelect = function()
+            local places = {
+                { key = 'rack',  title = 'Move drying rack here',     icon = 'fa-solid fa-wind' },
+                { key = 'table', title = 'Move processing table here', icon = 'fa-solid fa-box' },
+                { key = 'shop',  title = 'Move seed shop NPC here',    icon = 'fa-solid fa-store' },
+            }
+            local opts = {}
+            for _, pl in ipairs(places) do
+                opts[#opts + 1] = { title = pl.title, icon = pl.icon, onSelect = function()
+                    local ok, msg = lib.callback.await('mars_drugs:admin:moveHere', false, pl.key)
+                    lib.notify({ title = 'Drug admin', description = msg, type = ok and 'success' or 'error' })
+                end }
+            end
+            lib.registerContext({ id = 'mars_drugadmin_places', title = 'Locations', menu = 'mars_drugadmin', options = opts })
+            lib.showContext('mars_drugadmin_places')
+        end,
+    }
+    options[#options + 1] = {
         title = 'Reset everything to defaults', icon = 'fa-solid fa-rotate-left',
         onSelect = function()
             if lib.alertDialog({ header = 'Reset', content = 'Reset all drug settings to config.lua?', centered = true, cancel = true }) ~= 'confirm' then return end
