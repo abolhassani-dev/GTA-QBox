@@ -671,4 +671,54 @@ return {
         description = 'Ready to sell.',
         client = { image = 'weed_og-kush.png' },
     },
+    ['mars_seed'] = {
+        label = 'Seed',
+        weight = 5,
+        description = 'Use it to plant (outdoors only).',
+        client = { image = 'weed_og-kush_seed.png' },
+    },
+
+    ['mars_joint'] = {
+        label = 'Joint',
+        weight = 5,
+        description = 'Use it to smoke.',
+        client = { image = 'joint.png' },
+    },
+
+    ['mars_shroom_fresh'] = {
+        label = 'Fresh Mushrooms',
+        weight = 30,
+        description = 'Dry them on a drying rack.',
+    },
+
+    ['mars_shroom_dry'] = {
+        label = 'Dried Mushrooms',
+        weight = 15,
+        description = 'Pack them at the table with empty bags.',
+    },
+
+    ['mars_shroom_bag'] = {
+        label = 'Bag of Mushrooms',
+        weight = 25,
+        description = 'Use it to eat, or sell it.',
+    },
+
+    ['mars_coca_leaf'] = {
+        label = 'Coca Leaf',
+        weight = 20,
+        description = 'Process it at the table with chemicals and bags.',
+    },
+
+    ['mars_cocaine_bag'] = {
+        label = 'Bag of Cocaine',
+        weight = 15,
+        description = 'Use it, or sell it.',
+        client = { image = 'cokebaggy.png' },
+    },
+
+    ['mars_chemicals'] = {
+        label = 'Chemicals',
+        weight = 500,
+        description = 'Needed to turn coca leaves into cocaine.',
+    },
 }
