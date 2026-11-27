@@ -2,8 +2,16 @@
 chcp 65001 >nul
 title Mars Community 2 - Update
 cd /d "%~dp0"
+set "GIT=git"
+where git >nul 2>&1
+if errorlevel 1 (
+  for %%D in (D E F C) do (
+    if exist "%%D:\Git\cmd\git.exe" set "GIT=%%D:\Git\cmd\git.exe"
+    if exist "%%D:\PortableGit\cmd\git.exe" set "GIT=%%D:\PortableGit\cmd\git.exe"
+  )
+)
 echo Downloading the latest changes from the developer...
-git pull
+"%GIT%" pull
 if errorlevel 1 (
   echo.
   echo UPDATE FAILED - send a screenshot of this window to the developer.
