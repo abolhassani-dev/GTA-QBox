@@ -504,6 +504,9 @@ end)
 -- selling to NPCs
 -- ─────────────────────────────────────────────────────────────
 
+-- ped types that never buy: 6 cop, 27 swat, 29 army
+local noBuyerTypes = { [6] = true, [27] = true, [29] = true }
+
 local function hasSellable()
     local seen = {}
     for _, cat in pairs(Config.Categories) do
@@ -519,6 +522,10 @@ exports.ox_target:addGlobalPed({
     { name = 'mars_sell', icon = 'fa-solid fa-cannabis', label = 'Sell product', distance = 2.0,
       canInteract = function(entity)
           if entity == shopPed or IsPedAPlayer(entity) or IsPedDeadOrDying(entity, true) then return false end
+          -- only ordinary people walking around: no animals, no cops/army, no script NPCs (shops, jobs)
+          if not IsPedHuman(entity) or noBuyerTypes[GetPedType(entity)] then return false end
+          local pop = GetEntityPopulationType(entity)
+          if pop < 1 or pop > 5 then return false end
           if IsPedInAnyVehicle(entity, false) or IsPedInAnyVehicle(cache.ped, false) or soldPeds[entity] then return false end
           return hasSellable()
       end,
