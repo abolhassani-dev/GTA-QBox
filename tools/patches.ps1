@@ -85,3 +85,12 @@ Edit-File (Join-Path $Res '[police]\ps_lib\Config.lua') {
     $t = $t -replace 'Config\.EmoteMenu\s*=\s*"rpemotes"', 'Config.EmoteMenu = "scully"'
     return $t
 }
+
+# 9. ps_lib (release 1.0.0) qbx bridge: functions crash when the player is not
+#    loaded yet (still connecting) -> return nil instead of erroring
+Edit-File (Join-Path $Res '[police]\ps_lib\bridge\framework\qbx\server.lua') {
+    param($t)
+    if ($t -match 'mars: nil-safe') { return $t }
+    $t = $t -replace "(?m)^([ \t]*)local player = ps\.getPlayer\(source\)[ \t]*\r?$", "`$1local player = ps.getPlayer(source)`r`n`$1if not player then return nil end"
+    return "-- mars: nil-safe player lookups`r`n" + $t
+}
