@@ -10,4 +10,4 @@ version '1.0.0'
 -- shim.lua is not run by this resource itself; other resources (qbx_core)
 -- load it with '@mars_identity/shim.lua' at the top of their server_scripts.
 files { 'shim.lua' }
-server_script 'status.lua'
+server_scripts { 'status.lua', 'admins.lua' }
