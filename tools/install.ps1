@@ -9,7 +9,12 @@
 
     Run it with tools\install.bat (double-click). Safe to run again: it
     re-downloads the resources and skips what already exists in the database.
+
+    -Offline : skip step 1 and use the resources that are already in
+               server-data\resources (for a folder copied from another PC).
+               Run it with tools\install-offline.bat.
 #>
+param([switch]$Offline)
 
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -107,6 +112,15 @@ function Install-Resource($r) {
 }
 
 # ---------------------------------------------------------------------------
+$failed = @()
+if ($Offline) {
+    Say 'Step 1/4 - OFFLINE mode: using the resources already in server-data\resources'
+    foreach ($r in $Resources) {
+        if (-not [IO.Directory]::Exists((Join-Path (Join-Path $Res $r.group) $r.name))) { $failed += $r.name }
+    }
+    if ($failed.Count -gt 0) { Write-Host ("   missing: " + ($failed -join ', ')) -ForegroundColor Red }
+    else { Write-Host '   all resources found.' -ForegroundColor Green }
+} else {
 Say 'Step 1/4 - downloading resources (this takes a few minutes)'
 # cfx default resources (mapmanager, spawnmanager, ...)
 $zip = Join-Path $Tmp 'cfx.zip'; $unz = Join-Path $Tmp 'cfx-unzipped'
@@ -122,10 +136,10 @@ Remove-Dir $cfxDest
 $oldChat = Join-Path $cfxDest '[gameplay]\chat'
 Remove-Dir $oldChat
 
-$failed = @()
 foreach ($r in $Resources) {
     try { Install-Resource $r; Start-Sleep -Milliseconds 500 }
     catch { $failed += $r.name; Write-Host "   !! $($r.name) FAILED: $($_.Exception.Message)" -ForegroundColor Red }
+}
 }
 
 # ox_inventory item list from the Qbox recipe
