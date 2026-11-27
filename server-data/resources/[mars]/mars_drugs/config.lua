@@ -172,7 +172,7 @@ Config.Processing = {
 Config.Lab = {
     rack  = vec4(2224.30, 5577.10, 53.85, 90.0),
     table = vec4(2222.40, 5574.60, 53.80, 90.0),
-    blip  = false,
+    blip  = true,
 }
 
 Config.Shop = {

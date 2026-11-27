@@ -314,7 +314,9 @@ lib.callback.register('mars_drugs:server:harvest', function(src, id)
     end
     exports.ox_inventory:AddItem(src, cat.harvest, amount, meta)
     removePlant(id)
-    return true, ('Harvested %d × %s (%s quality).'):format(amount, strain.label, quality.label)
+    local nextStep = cat.dried and ' Dry it on the drying rack at the lab (/druglab), then pack it at the table.'
+        or ' Take it to the processing table at the lab.'
+    return true, ('Harvested %d × %s (%s quality).%s'):format(amount, strain.label, quality.label, nextStep)
 end)
 
 lib.callback.register('mars_drugs:server:destroy', function(src, id)

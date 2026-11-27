@@ -24,7 +24,7 @@ local function groundZ(x, y, z)
     RequestCollisionAtCoord(x, y, z)
     for _ = 1, 25 do
         -- look just above first (so roofs/trees are ignored), then from high up
-        local found, gz = GetGroundZFor_3dCoord(x, y, z + 2.0, false)
+        local found, gz = GetGroundZFor_3dCoord(x, y, z + 1.0, false)
         if found then return gz end
         found, gz = GetGroundZFor_3dCoord(x, y, z + 50.0, false)
         if found then return gz end
@@ -367,7 +367,19 @@ local function openTable()
             end
         end
     end
-    if #options == 0 then return notify(false, 'You have nothing to process.') end
+    -- fresh harvest that still has to go on the drying rack: say so instead of "nothing"
+    for _, cat in pairs(Config.Categories) do
+        if cat.dried then
+            for _, g in pairs(groupItems(cat.harvest)) do
+                options[#options + 1] = {
+                    title = ('%s – %s (fresh, %d)'):format(strainLabel(g.strain), qualityLabel(g.quality), g.count),
+                    description = 'Dry it on the drying rack first, then come back to pack or roll it.',
+                    icon = 'fa-solid fa-wind', disabled = true,
+                }
+            end
+        end
+    end
+    if #options == 0 then return notify(false, 'You have nothing to process. Harvest a plant first.') end
     lib.registerContext({ id = 'mars_drugs_table', title = 'Processing table', options = options })
     lib.showContext('mars_drugs_table')
 end
@@ -460,6 +472,7 @@ CreateThread(function()
         local c = Config.Lab.table
         local blip = AddBlipForCoord(c.x, c.y, c.z)
         SetBlipSprite(blip, 496); SetBlipColour(blip, 2); SetBlipAsShortRange(blip, true)
+        BeginTextCommandSetBlipName('STRING'); AddTextComponentSubstringPlayerName('Drug Lab'); EndTextCommandSetBlipName(blip)
     end
 end)
 
