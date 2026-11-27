@@ -1,6 +1,6 @@
 -- /jobadmin – job admin panel (the server checks admin rights on every action)
 
-local openMain, openPlayers, openJobs, openWork
+local openMain, openPlayers, openJobs, openWork, openOverview
 
 local function result(ok, msg)
     lib.notify({ title = 'Job admin', description = msg, type = ok and 'success' or 'error' })
@@ -113,6 +113,11 @@ openJob = function(job)
               openJob(job)
           end },
     }
+    options[#options + 1] = {
+        title = ('Online now: %d (on duty %d)'):format(job.online.count, job.online.duty),
+        description = #job.online.names > 0 and table.concat(job.online.names, '\n') or 'Nobody from this job is online.',
+        icon = 'fa-solid fa-users', readOnly = true,
+    }
     for _, g in ipairs(job.grades) do
         options[#options + 1] = {
             title = ('Grade %d – %s%s'):format(g.level, g.name, g.isboss and ' (boss)' or ''),
@@ -171,8 +176,9 @@ openJobs = function()
     for _, job in ipairs(jobs) do
         local top = job.grades[#job.grades]
         options[#options + 1] = {
-            title = job.label,
-            description = ('%s • %d grades • up to $%d%s'):format(job.name, #job.grades, top and top.payment or 0, job.custom and ' • edited' or ''),
+            title = ('%s%s'):format(job.label, job.online.count > 0 and ('  👥 %d'):format(job.online.count) or ''),
+            description = ('%s • %d grades • up to $%d • online %d, on duty %d%s'):format(job.name, #job.grades, top and top.payment or 0,
+                job.online.count, job.online.duty, job.custom and ' • edited' or ''),
             arrow = true, onSelect = function() openJob(job) end,
         }
     end
@@ -234,10 +240,31 @@ openWork = function()
     lib.showContext('mars_jobadmin_work')
 end
 
+openOverview = function()
+    local jobs = lib.callback.await('mars_jobs:admin:jobs', false) or {}
+    table.sort(jobs, function(a, b)
+        if a.online.count ~= b.online.count then return a.online.count > b.online.count end
+        return a.label < b.label
+    end)
+    local options = {}
+    for _, job in ipairs(jobs) do
+        options[#options + 1] = {
+            title = ('%s — %d online / %d on duty'):format(job.label, job.online.count, job.online.duty),
+            description = #job.online.names > 0 and table.concat(job.online.names, '\n') or nil,
+            icon = job.online.count > 0 and 'fa-solid fa-circle' or 'fa-regular fa-circle',
+            iconColor = job.online.duty > 0 and '#22c55e' or (job.online.count > 0 and '#eab308' or '#6b7280'),
+            arrow = true, onSelect = function() openJob(job) end,
+        }
+    end
+    lib.registerContext({ id = 'mars_jobadmin_overview', title = 'Jobs overview', menu = 'mars_jobadmin', options = options })
+    lib.showContext('mars_jobadmin_overview')
+end
+
 openMain = function()
     lib.registerContext({
         id = 'mars_jobadmin', title = 'Mars – Job Admin',
         options = {
+            { title = 'Overview ▸', description = 'Every job with how many people work there right now', icon = 'fa-solid fa-table-list', arrow = true, onSelect = function() openOverview() end },
             { title = 'Players ▸', description = 'See everyone\'s job, set job and grade, duty, fire', icon = 'fa-solid fa-users', arrow = true, onSelect = openPlayers },
             { title = 'Jobs ▸', description = 'Create jobs, edit grades and salaries', icon = 'fa-solid fa-briefcase', arrow = true, onSelect = openJobs },
             { title = 'Work jobs ▸', description = 'Pizza, courier, electrician, vineyard, miner, lumberjack', icon = 'fa-solid fa-person-digging', arrow = true, onSelect = openWork },

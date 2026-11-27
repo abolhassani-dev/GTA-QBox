@@ -37,10 +37,15 @@ local function modelFor(p)
 end
 
 local function progress(label, duration, anim, prop)
-    return lib.progressBar({
+    -- a missing animation must never stop the action itself
+    if anim and anim.dict and not DoesAnimDictExist(anim.dict) then anim = nil end
+    local ok, result = pcall(lib.progressBar, {
         duration = duration, label = label, useWhileDead = false, canCancel = true,
         disable = { move = true, car = true, combat = true }, anim = anim, prop = prop,
     })
+    if ok then return result end
+    print(('[mars_drugs] progress bar error: %s'):format(result))
+    return lib.progressBar({ duration = duration, label = label, canCancel = true, disable = { move = true, car = true, combat = true } })
 end
 
 local function strainLabel(key)
@@ -247,7 +252,7 @@ local function openDrying()
                         local count = askAmount('Dry', g.count)
                         if not count then return end
                         local duration = math.min(Config.Processing.maxMs, Config.Processing.dryMsPerItem * count)
-                        if not progress('Hanging on the rack...', duration, { dict = 'anim@amb@business@weed@weed_inspecting_lo_med_hi@', clip = 'weed_crouch_checkingleaves_idle_01_inspector' }) then return end
+                        if not progress('Hanging on the rack...', duration, { dict = 'amb@prop_human_bum_bin@base', clip = 'base' }) then return end
                         notify(lib.callback.await('mars_drugs:server:dry', false, g.strain, g.quality, count))
                     end,
                 }
@@ -263,7 +268,7 @@ local function openTable()
     local options = {}
     local bags = exports.ox_inventory:Search('count', 'empty_weed_bag')
     local papers = exports.ox_inventory:Search('count', 'rolling_paper')
-    local sortAnim = { dict = 'anim@amb@business@weed@weed_sorting_seated@', clip = 'sorter_right_sort_v3_sorter02' }
+    local sortAnim = { dict = 'mini@repair', clip = 'fixing_a_ped' }
 
     for catKey, cat in pairs(Config.Categories) do
         local input = cat.dried or cat.harvest

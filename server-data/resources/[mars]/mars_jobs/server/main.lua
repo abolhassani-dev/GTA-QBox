@@ -184,6 +184,20 @@ end)
 
 lib.callback.register('mars_jobs:admin:jobs', function(src)
     if not isAdmin(src) then return end
+    -- who is online in each job right now
+    local online = {}
+    for _, id in ipairs(GetPlayers()) do
+        local p = getPlayer(tonumber(id))
+        if p then
+            local j = p.PlayerData.job
+            online[j.name] = online[j.name] or { count = 0, duty = 0, names = {} }
+            local o = online[j.name]
+            o.count = o.count + 1
+            if j.onduty then o.duty = o.duty + 1 end
+            o.names[#o.names + 1] = ('[%s] %s – %s%s'):format(id, charName(p), j.grade and j.grade.name or '', j.onduty and ' (on duty)' or '')
+        end
+    end
+
     local out = {}
     for name, job in pairs(exports.qbx_core:GetJobs()) do
         local grades = {}
@@ -195,6 +209,7 @@ lib.callback.register('mars_jobs:admin:jobs', function(src)
             name = name, label = job.label, type = job.type, grades = grades,
             custom = customJobs[name] ~= nil, builtin = builtinJobs[name] == true,
             protected = Config.ProtectedJobs[name] == true, work = Config.WorkJobs[name] ~= nil,
+            online = online[name] or { count = 0, duty = 0, names = {} },
         }
     end
     table.sort(out, function(a, b) return a.label < b.label end)

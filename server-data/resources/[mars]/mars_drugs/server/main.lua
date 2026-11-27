@@ -24,8 +24,11 @@ end
 
 local function playerCoords(src) return GetEntityCoords(GetPlayerPed(src)) end
 
+-- horizontal distance only: the lab props and plants are placed on the real
+-- ground, which can be a few metres above/below the height in config.lua
 local function near(src, coords, maxDist)
-    return #(playerCoords(src) - vec3(coords.x, coords.y, coords.z)) <= maxDist
+    local p = playerCoords(src)
+    return #(vec2(p.x, p.y) - vec2(coords.x, coords.y)) <= maxDist
 end
 
 local function publicPlant(p)
@@ -334,7 +337,7 @@ end
 
 -- drying rack: harvest item -> dried item
 lib.callback.register('mars_drugs:server:dry', function(src, strain, quality, count)
-    if not near(src, Config.Lab.rack, 4.0) then return false, 'You must be at the drying rack.' end
+    if not near(src, Config.Lab.rack, 6.0) then return false, 'You must be at the drying rack.' end
     if not validStrainQuality(strain, quality) then return false, 'Error.' end
     local cat = Config.CategoryOf(strain)
     if not cat.dried then return false, 'This does not need drying.' end
@@ -350,7 +353,7 @@ end)
 
 -- packing table: (dried or harvest) x perProduct + container (+ extra) -> product
 lib.callback.register('mars_drugs:server:pack', function(src, strain, quality, products)
-    if not near(src, Config.Lab.table, 4.0) then return false, 'You must be at the packing table.' end
+    if not near(src, Config.Lab.table, 6.0) then return false, 'You must be at the packing table.' end
     if not validStrainQuality(strain, quality) then return false, 'Error.' end
     local cat = Config.CategoryOf(strain)
     products = math.floor(tonumber(products) or 0)
@@ -381,7 +384,7 @@ end)
 
 -- rolling joints: 1 dry bud + 1 rolling paper -> jointsPerBud joints
 lib.callback.register('mars_drugs:server:roll', function(src, strain, quality, buds)
-    if not near(src, Config.Lab.table, 4.0) then return false, 'You must be at the table.' end
+    if not near(src, Config.Lab.table, 6.0) then return false, 'You must be at the table.' end
     if not validStrainQuality(strain, quality) then return false, 'Error.' end
     local cat, catKey = Config.CategoryOf(strain)
     if catKey ~= 'weed' then return false, 'Only cannabis can be rolled.' end
