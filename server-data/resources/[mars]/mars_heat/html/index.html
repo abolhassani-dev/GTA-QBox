@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; background: transparent; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; }
+  #heat {
+    position: fixed; right: 1.4vw; top: 23vh; width: 190px;
+    padding: 9px 12px 10px; border-radius: 10px;
+    background: rgba(12, 12, 16, .78); border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 6px 20px rgba(0,0,0,.35); color: #fff;
+    opacity: 0; transform: translateX(16px); transition: opacity .35s, transform .35s;
+  }
+  #heat.show { opacity: 1; transform: none; }
+  .row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; letter-spacing: .04em; }
+  .name { display: flex; align-items: center; gap: 6px; font-weight: 700; text-transform: uppercase; }
+  .flame { width: 14px; height: 14px; }
+  .val { opacity: .7; font-variant-numeric: tabular-nums; }
+  .bar { margin-top: 7px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.1); overflow: hidden; }
+  .fill { height: 100%; width: 0; border-radius: 3px; transition: width .6s, background .6s; }
+  #heat.hot .flame { animation: pulse 1.2s infinite; }
+  @keyframes pulse { 50% { transform: scale(1.25); } }
+</style>
+</head>
+<body>
+<div id="heat">
+  <div class="row">
+    <span class="name">
+      <svg class="flame" viewBox="0 0 24 24"><path id="flamePath" fill="#fb923c" d="M12 2s5 4.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5 0 2 1 3 2 3 0-3-1-5.5 1-8.5z"/></svg>
+      <span id="label">Clean</span>
+    </span>
+    <span class="val" id="val">0</span>
+  </div>
+  <div class="bar"><div class="fill" id="fill"></div></div>
+</div>
+<script>
+  const box = document.getElementById('heat');
+  window.addEventListener('message', (e) => {
+    const d = e.data;
+    if (d.action !== 'heat') return;
+    box.classList.toggle('show', !!d.show);
+    box.classList.toggle('hot', d.heat >= 60);
+    document.getElementById('label').textContent = d.label;
+    document.getElementById('label').style.color = d.color;
+    document.getElementById('flamePath').setAttribute('fill', d.color);
+    document.getElementById('val').textContent = Math.floor(d.heat) + ' / ' + d.max;
+    const fill = document.getElementById('fill');
+    fill.style.width = (d.heat / d.max * 100) + '%';
+    fill.style.background = d.color;
+  });
+</script>
+</body>
+</html>

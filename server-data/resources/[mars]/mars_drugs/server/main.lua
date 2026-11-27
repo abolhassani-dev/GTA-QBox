@@ -425,6 +425,9 @@ local function alertPolice(coords)
     end
 end
 
+-- optional: mars_heat (heat + reputation)
+local function heatApi() return GetResourceState('mars_heat') == 'started' and exports.mars_heat or nil end
+
 lib.callback.register('mars_drugs:server:sell', function(src)
     local now = os.time()
     if sellCooldown[src] and now - sellCooldown[src] < Config.Selling.cooldownSeconds then return false, 'Wait a moment...' end
@@ -439,9 +442,13 @@ lib.callback.register('mars_drugs:server:sell', function(src)
     if #candidates == 0 then return false, 'You have nothing to sell.' end
     local slot = candidates[math.random(#candidates)]
 
-    if math.random(100) > Config.Selling.acceptChance then
-        if math.random(100) <= Config.Selling.policeAlertChance then
+    local heat = heatApi()
+    local rep = heat and heat:GetRep(src, 'drugs')
+    if math.random(100) > Config.Selling.acceptChance + (rep and rep.acceptBonus or 0) then
+        local chance = heat and heat:AlertChance(src, Config.Selling.policeAlertChance) or Config.Selling.policeAlertChance
+        if math.random(100) <= chance then
             alertPolice(playerCoords(src))
+            if heat then heat:Crime(src, 'drug_snitch') end
             return false, 'The customer refused and called the police!'
         end
         return false, 'The customer refused.'
@@ -454,10 +461,11 @@ lib.callback.register('mars_drugs:server:sell', function(src)
     local amount = math.random(1, math.min(Config.Selling.maxPerDeal, slot.count))
     local unit = strain.basePrice * q.priceMult * (cat.priceMult or 1)
     if slot.name == 'mars_joint' then unit = unit * Config.Selling.jointPriceMult end
-    local price = math.floor(unit * amount * (math.random(90, 110) / 100))
+    local price = math.floor(unit * amount * (math.random(90, 110) / 100) * (rep and rep.priceMult or 1))
 
     if not exports.ox_inventory:RemoveItem(src, slot.name, amount, nil, slot.slot) then return false, 'Sale failed.' end
     getPlayer(src).Functions.AddMoney('cash', price, 'mars-drugs-sale')
+    if heat then heat:Crime(src, 'drug_sale') end
     return true, ('Sold %d × %s (%s) for $%d.'):format(amount, strain.label, q.label, price)
 end)
 

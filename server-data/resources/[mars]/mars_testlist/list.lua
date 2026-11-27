@@ -66,4 +66,12 @@ TestList = {
         { id = 'scrap',    title = 'Scrapyard',                    how = 'Bring a stolen car to the scrapyard.' },
         { id = 'race',     title = 'Street race',                  how = 'Start a street race with another player.' },
     } },
+    { section = 'Heat & Reputation', icon = 'fa-solid fa-fire', tests = {
+        { id = 'heatmenu',  title = 'Street profile',               how = 'Type /rep. You see your heat and Street / Drugs reputation.' },
+        { id = 'heathud',   title = 'Heat meter',                   how = '/heatkit (admin) adds 25 heat. A meter appears on the right; /heathud hides it.' },
+        { id = 'heatshoot', title = 'Shooting raises heat',         how = 'Fire a gun in the air. Heat goes up (/rep).' },
+        { id = 'heatdrug',  title = 'Drug deals give reputation',   how = 'Sell drugs to people. Drugs rep goes up; at Hustler prices get better.' },
+        { id = 'heatcool',  title = 'Heat cools down',              how = 'Wait a few minutes. Heat goes down by itself.' },
+        { id = 'heatadmin', title = 'Heat admin',                   how = '/heatadmin: players list, set heat / reputation, settings.' },
+    } },
 }

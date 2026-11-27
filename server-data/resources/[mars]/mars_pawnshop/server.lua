@@ -282,7 +282,13 @@ lib.callback.register('mars_pawn:server:sell', function(src, name, count, haggle
     }
     pushHistory(citizenid, ticket)
 
-    if total >= Config.Police.minValue and math.random(100) <= Config.Police.chance then alertPolice(src) end
+    if total >= Config.Police.minValue then
+        -- with mars_heat: selling goods = street rep + a little heat, and hot players get reported more
+        local heat = GetResourceState('mars_heat') == 'started' and exports.mars_heat or nil
+        local chance = heat and heat:AlertChance(src, Config.Police.chance) or Config.Police.chance
+        if heat then heat:Crime(src, 'fence') end
+        if math.random(100) <= chance then alertPolice(src) end
+    end
     return { ok = true, ticket = ticket, state = buildState(src) }
 end)
 
