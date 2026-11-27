@@ -20,7 +20,7 @@ function Remove-Dir($p) { if ([IO.Directory]::Exists($p)) { [IO.Directory]::Dele
 # name = folder name the server expects; check = file that proves the UI is pre-built
 $Packages = @(
     @{ name = 'PolyZone';    repo = 'mkafrin/PolyZone';         check = 'client.lua' }
-    @{ name = 'ps_lib';      repo = 'Project-Sloth/ps_lib';     check = 'fxmanifest.lua' }
+    @{ name = 'ps_lib';      repo = 'Project-Sloth/ps_lib';     check = 'web\build\index.html' }
     @{ name = 'ps-dispatch'; repo = 'Project-Sloth/ps-dispatch'; check = 'html\index.html' }
     @{ name = 'ps-mdt';      repo = 'Project-Sloth/ps-mdt';     check = 'web\dist\index.html' }
 )
