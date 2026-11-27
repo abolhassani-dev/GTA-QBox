@@ -11,6 +11,7 @@ QBox (qbx_core)، ox_lib، ox_inventory (کیف)، ox_target (Alt)، oxmysql، o
 | `mars_identity` | شناسایی بازیکن در VMP + ادمین با Citizen ID |
 | `mars_chat` | چت (T) و دستورهای `/ooc /me /do /f /w` |
 | `mars_drugs` | سیستم کامل مواد (راهنما: `03-mars-drugs.md`) |
+| `mars_jobs` | پنل ادمین شغل `/jobadmin` + ۶ شغل کاری: پیک پیتزا، پستچی GoPostal، برق‌کار، انگورچین، معدن‌چی، هیزم‌شکن |
 
 ## اضافه‌شده در این نسخه
 
