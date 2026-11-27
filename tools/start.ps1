@@ -22,6 +22,9 @@ if (-not (Test-Path (Join-Path $Data 'secrets.cfg'))) {
     exit 1
 }
 
+# --- apply the developer's patches to downloaded resources (idempotent) ---
+& (Join-Path $PSScriptRoot 'patches.ps1')
+
 # --- keep ox_inventory's item list in sync with tools\ox_items.lua (new Mars items) ---
 $itemsSrc = Join-Path $PSScriptRoot 'ox_items.lua'
 $itemsDst = Join-Path $Data 'resources\[ox]\ox_inventory\data\items.lua'

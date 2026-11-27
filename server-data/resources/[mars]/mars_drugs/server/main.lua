@@ -368,10 +368,19 @@ CreateThread(function()
     end
     for _, item in ipairs(Config.Shop.extra) do inventory[#inventory + 1] = item end
 
-    exports.ox_inventory:RegisterShop('mars_drugs_shop', {
-        name = Config.Shop.blip.label,
-        inventory = inventory,
-    })
+    -- ox_inventory finishes loading after the database is ready, so its
+    -- shop export may not exist yet: retry for up to a minute.
+    for _ = 1, 60 do
+        local ok = pcall(function()
+            exports.ox_inventory:RegisterShop('mars_drugs_shop', {
+                name = Config.Shop.blip.label,
+                inventory = inventory,
+            })
+        end)
+        if ok then return end
+        Wait(1000)
+    end
+    print('^1[mars_drugs] could not register the seed shop (ox_inventory not ready)^0')
 end)
 
 -- ─────────────────────────────────────────────────────────────

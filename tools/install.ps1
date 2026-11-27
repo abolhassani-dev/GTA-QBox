@@ -147,16 +147,8 @@ $invData = Join-Path $Res '[ox]\ox_inventory\data'
 if ([IO.Directory]::Exists($invData)) { [IO.File]::Copy((Join-Path $PSScriptRoot 'ox_items.lua'), (Join-Path $invData 'items.lua'), $true) }
 
 # ---------------------------------------------------------------------------
-Say 'Step 2/4 - patching qbx_core for VMP (identity shim)'
-$coreManifest = Join-Path $Res '[qbx]\qbx_core\fxmanifest.lua'
-if ([IO.File]::Exists($coreManifest)) {
-    $text = [IO.File]::ReadAllText($coreManifest)
-    if ($text -notmatch '@mars_identity/shim.lua') {
-        $text = $text -replace "server_scripts\s*\{", "server_scripts {`r`n    '@mars_identity/shim.lua',"
-        [IO.File]::WriteAllText($coreManifest, $text, $Utf8NoBom)
-        Write-Host '   qbx_core patched.'
-    } else { Write-Host '   already patched.' }
-} else { Write-Host '   qbx_core is missing - patch skipped!' -ForegroundColor Red }
+Say 'Step 2/4 - applying Mars patches (VMP identity shim, warnings)'
+& (Join-Path $PSScriptRoot 'patches.ps1')
 
 # ---------------------------------------------------------------------------
 Say 'Step 3/4 - database'
